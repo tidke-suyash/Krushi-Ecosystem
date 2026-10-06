@@ -1,0 +1,705 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>VANI — News & Discussion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  color-scheme:light;
+  --ink:#181712; --paper:#F7F4EC; --card:#FFFFFF; --line:#E7E1D0;
+  --saffron:#F2900E; --saffron-d:#C96F08; --saffron-soft:#FDEDD3;
+  --down:#3F5468; --muted:#847E6C; --muted-2:#B4AE9C;
+  box-sizing:border-box;
+}
+*,*::before,*::after{box-sizing:inherit;}
+html,body{height:100%;margin:0;}
+html{background:var(--paper);}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(--ink) !important;-webkit-font-smoothing:antialiased;}
+input,textarea,select,button{color:var(--ink);}
+h1,h2,h3,.headline{font-family:'Lora',Georgia,serif;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+a{color:inherit;text-decoration:none;}
+img{max-width:100%;display:block;}
+::selection{background:var(--saffron-soft);}
+
+/* ---- Auth ---- */
+.view{display:none;}
+.view.active{display:block;}
+#auth{
+  min-height:100vh;align-items:center;justify-content:center;padding:24px;
+  position:relative;overflow:hidden;background:#2a2116;
+}
+#auth.active{display:flex;}
+#auth::before{
+  content:'';position:absolute;inset:0;background:url('vani_bg.jpeg') center/cover no-repeat;
+  transform:scale(1.02);
+}
+#auth::after{
+  content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(30,23,14,.35),rgba(30,23,14,.6));
+}
+.auth-card{position:relative;z-index:1;width:min(400px,100%);background:var(--card);border:1px solid var(--line);border-radius:22px;padding:34px 30px;box-shadow:0 20px 50px -18px rgba(0,0,0,.55);}
+.auth-logo{width:56px;display:block;margin:0 auto 10px;}
+.auth-brand{text-align:center;font-size:22px;font-weight:700;margin:0 0 2px;}
+.auth-tag{text-align:center;color:var(--muted);font-size:12.5px;margin:0 0 22px;letter-spacing:.02em;}
+.field{margin-bottom:13px;}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:5px;}
+.field input{width:100%;padding:11px 14px;border:1.5px solid var(--line);border-radius:12px;font-size:14px;background:#fdfcf9;outline:none;}
+.field input:focus{border-color:var(--saffron);}
+.field-hidden{display:none;}
+.btn-cta{width:100%;padding:12px;border-radius:14px;background:var(--saffron);color:#fff;font-weight:700;font-size:14.5px;box-shadow:0 8px 18px -8px rgba(242,144,14,.6);}
+.auth-switch{text-align:center;font-size:13px;color:var(--muted);margin-top:16px;}
+.auth-switch b{color:var(--saffron-d);cursor:pointer;}
+.auth-err{color:#B3401D;font-size:12.5px;font-weight:600;min-height:16px;margin:-4px 0 10px;}
+
+/* ---- App shell ---- */
+#app{display:none;min-height:100vh;}
+#app.active{display:flex;}
+.rail{width:236px;flex-shrink:0;border-right:1px solid var(--line);padding:22px 14px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;}
+.rail-brand{display:flex;align-items:center;gap:9px;padding:0 8px 20px;}
+.rail-brand img{width:30px;}
+.rail-brand span{font-size:17px;font-weight:700;}
+.rail-nav{display:flex;flex-direction:column;gap:2px;flex:1;}
+.rail-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:12px;font-size:14.5px;font-weight:500;color:var(--ink);}
+.rail-item .ic{width:20px;text-align:center;}
+.rail-item:hover{background:#efe9d8;}
+.rail-item.active{background:var(--ink);color:#fff;}
+.rail-create{margin:14px 4px;padding:12px;border-radius:14px;background:var(--saffron);color:#fff;font-weight:700;font-size:14px;text-align:center;}
+.rail-user{display:flex;align-items:center;gap:10px;padding:10px 8px;border-top:1px solid var(--line);margin-top:8px;}
+.rail-avatar{width:34px;height:34px;border-radius:50%;background:var(--saffron);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;}
+.rail-user .nm{font-size:13px;font-weight:600;}
+.rail-user .un{font-size:11.5px;color:var(--muted);}
+
+.center{flex:1;min-width:0;max-width:640px;margin:0 auto;padding:20px 22px 90px;}
+.right-rail{width:300px;flex-shrink:0;padding:20px 18px;border-left:1px solid var(--line);}
+@media (max-width:1180px){.right-rail{display:none;}}
+@media (max-width:860px){.rail{display:none;}.center{padding:16px 14px 88px;max-width:none;}}
+
+.topbar-mobile{display:none;}
+@media (max-width:860px){
+  .topbar-mobile{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line);background:var(--paper);position:sticky;top:0;z-index:20;}
+  .topbar-mobile .tb-brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px;}
+  .topbar-mobile img{width:24px;}
+}
+
+.section-title{font-size:13px;font-weight:700;text-transform:none;color:var(--muted);letter-spacing:.02em;margin:0 0 12px;display:flex;align-items:center;justify-content:space-between;}
+.tabs{display:flex;gap:6px;margin-bottom:16px;}
+.tab{padding:8px 14px;border-radius:11px;font-size:13.5px;font-weight:600;color:var(--muted);}
+.tab.active{background:var(--ink);color:#fff;}
+
+/* ---- Card ---- */
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px;transition:box-shadow .15s;}
+.card:hover{box-shadow:0 10px 24px -16px rgba(24,23,18,.25);}
+.card-top{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-bottom:9px;}
+.space-tag{background:var(--saffron-soft);color:var(--saffron-d);font-weight:700;padding:3px 9px;border-radius:8px;font-size:11.5px;}
+.card h3.headline{font-size:17px;line-height:1.35;margin:0 0 6px;font-weight:700;}
+.card p.summary{font-size:13.5px;color:#4a4636;line-height:1.55;margin:0 0 10px;}
+.thumb{width:100%;aspect-ratio:16/8;border-radius:13px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;font-size:34px;}
+.card-actions{display:flex;align-items:center;gap:6px;margin-top:4px;}
+.vote{display:flex;align-items:center;gap:6px;background:#f2eee2;border-radius:12px;padding:4px 6px;}
+.vote button{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted);}
+.vote button.voted-up{color:var(--saffron);background:var(--saffron-soft);}
+.vote button.voted-down{color:var(--down);background:#e7edf1;}
+.vote .score{font-weight:700;font-size:13.5px;min-width:26px;text-align:center;}
+.act-btn{display:flex;align-items:center;gap:5px;padding:6px 10px;border-radius:10px;font-size:12.5px;font-weight:600;color:var(--muted);}
+.act-btn:hover{background:#f2eee2;}
+.act-btn.saved{color:var(--saffron-d);}
+.vote-counts{font-size:10.5px;color:var(--muted-2);margin-left:4px;}
+
+/* Ads */
+.ad-card{border:1.5px dashed #D8CFAE;background:#FBF8EE;border-radius:18px;padding:16px;margin-bottom:14px;}
+.ad-label{font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--muted-2);margin-bottom:8px;display:flex;justify-content:space-between;}
+.ad-body{display:flex;gap:12px;align-items:center;}
+.ad-body .ad-ic{width:48px;height:48px;border-radius:12px;background:var(--saffron-soft);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.ad-title{font-size:14px;font-weight:700;margin:0 0 3px;}
+.ad-sub{font-size:12px;color:var(--muted);margin:0;}
+.ad-banner{border:1px solid var(--line);border-radius:16px;padding:14px 18px;background:linear-gradient(120deg,var(--saffron-soft),#fff);display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.side-ad{border:1.5px dashed #D8CFAE;background:#FBF8EE;border-radius:16px;padding:14px;margin-bottom:16px;text-align:center;}
+.side-ad .ad-ic{width:100%;height:80px;border-radius:12px;background:var(--saffron-soft);display:flex;align-items:center;justify-content:center;font-size:30px;margin-bottom:10px;}
+
+.widget{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:16px;}
+.widget h4{font-size:13px;margin:0 0 12px;color:var(--muted);font-weight:700;}
+.space-row{display:flex;align-items:center;gap:10px;padding:7px 0;font-size:13px;}
+.space-row .ic{width:30px;height:30px;border-radius:9px;background:var(--saffron-soft);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.space-row .nm{font-weight:600;flex:1;}
+.space-row .mem{color:var(--muted);font-size:11.5px;}
+
+/* Spaces grid */
+.spaces-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:520px){.spaces-grid{grid-template-columns:1fr;}}
+.space-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;}
+.space-card .ic{width:42px;height:42px;border-radius:12px;background:var(--saffron-soft);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:10px;}
+.space-card h4{margin:0 0 4px;font-size:15px;}
+.space-card p{margin:0 0 10px;font-size:12.5px;color:var(--muted);line-height:1.4;}
+.space-card .meta{font-size:11.5px;color:var(--muted-2);margin-bottom:10px;}
+.join-btn{padding:7px 14px;border-radius:10px;background:var(--ink);color:#fff;font-size:12.5px;font-weight:700;}
+.join-btn.joined{background:#efe9d8;color:var(--ink);}
+
+/* Space detail header */
+.space-hero{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;margin-bottom:18px;display:flex;gap:16px;align-items:center;}
+.space-hero .ic{width:60px;height:60px;border-radius:16px;background:var(--saffron-soft);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;}
+.space-hero h2{margin:0 0 4px;font-size:20px;}
+.space-hero p{margin:0 0 6px;color:var(--muted);font-size:13px;}
+
+/* Composer */
+.composer-form .field textarea{width:100%;padding:11px 14px;border:1.5px solid var(--line);border-radius:12px;font-size:14px;font-family:inherit;resize:vertical;min-height:110px;outline:none;}
+.composer-form select{width:100%;padding:11px 14px;border:1.5px solid var(--line);border-radius:12px;font-size:14px;background:#fdfcf9;}
+.img-toggle{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:14px;}
+
+/* Notifications */
+.notif{display:flex;gap:12px;padding:12px 4px;border-bottom:1px solid var(--line);}
+.notif .ic{width:34px;height:34px;border-radius:10px;background:var(--saffron-soft);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.notif .tx{font-size:13.5px;}
+.notif .tm{font-size:11px;color:var(--muted-2);margin-top:2px;}
+
+/* Profile */
+.profile-head{text-align:center;padding:10px 0 20px;}
+.profile-avatar{width:76px;height:76px;border-radius:50%;background:var(--saffron);color:#fff;font-size:28px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;}
+.profile-head h2{margin:0 0 2px;font-size:19px;}
+.profile-head .un{color:var(--muted);font-size:13px;margin-bottom:8px;}
+.profile-head .bio{font-size:13px;color:#4a4636;max-width:400px;margin:0 auto 14px;}
+.stat-row{display:flex;justify-content:center;gap:26px;margin-bottom:6px;}
+.stat-row .st b{display:block;font-size:17px;}
+.stat-row .st span{font-size:11px;color:var(--muted);}
+
+/* Post detail */
+.comment{padding:12px 0;border-top:1px solid var(--line);}
+.comment .ca{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+.comment .avatar-sm{width:24px;height:24px;border-radius:50%;background:#e7e1cf;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;}
+.comment .who{font-weight:600;font-size:12.5px;}
+.comment .when{font-size:11px;color:var(--muted-2);}
+.comment .body{font-size:13.5px;line-height:1.5;margin-left:32px;}
+.comment-input{display:flex;gap:8px;margin-top:14px;}
+.comment-input input{flex:1;padding:10px 14px;border:1.5px solid var(--line);border-radius:12px;font-size:13.5px;outline:none;}
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:14px;}
+
+/* Bottom nav */
+.bottom-nav{display:none;}
+@media(max-width:860px){
+  .bottom-nav{
+    display:flex;position:fixed;left:0;right:0;bottom:0;height:60px;background:var(--card);
+    border-top:1px solid var(--line);z-index:30;padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  .bn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--muted);font-size:9.5px;font-weight:600;}
+  .bn-item.active{color:var(--saffron-d);}
+  .bn-item .ic{font-size:17px;}
+  .bn-fab{
+    width:52px;height:52px;border-radius:50%;background:var(--saffron);color:#fff;display:flex;
+    align-items:center;justify-content:center;font-size:24px;margin-top:-22px;box-shadow:0 8px 18px -6px rgba(242,144,14,.7);border:3px solid var(--paper);
+  }
+}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:12px;font-size:13px;font-weight:600;opacity:0;transition:.2s;z-index:80;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+@media(min-width:861px){.toast{bottom:24px;}}
+</style>
+</head>
+<body>
+
+<div id="auth" class="view active">
+  <div class="auth-card">
+    <img class="auth-logo" src="vani_logo.png" alt="VANI">
+    <p class="auth-brand">VANI</p>
+    <p class="auth-tag">Village Agri News &amp; Information</p>
+    <div class="auth-err" id="auth-err"></div>
+    <div class="field field-hidden" id="f-name"><label>Full name</label><input id="in-name" placeholder="Ravi Patel"></div>
+    <div class="field"><label>Email</label><input id="in-email" type="email" placeholder="you@vani.news"></div>
+    <div class="field"><label>Password</label><input id="in-pass" type="password" placeholder="••••••••"></div>
+    <button class="btn-cta" id="auth-submit">Sign in</button>
+    <p class="auth-switch" id="auth-switch">New to VANI? <b id="auth-toggle">Create an account</b></p>
+  </div>
+</div>
+
+<div id="app">
+  <aside class="rail">
+    <div class="rail-brand"><img src="vani_logo.png" alt=""><span>VANI</span><button id="fs-btn-d" title="Fullscreen" style="margin-left:auto;font-size:15px;color:var(--muted)">⛶</button></div>
+    <div class="rail-nav" id="rail-nav"></div>
+    <button class="rail-create" data-go="create">+ Create post</button>
+    <div class="rail-user">
+      <div class="rail-avatar" id="rail-avatar">R</div>
+      <div><div class="nm" id="rail-name">User</div><div class="un" id="rail-un">@user</div></div>
+    </div>
+  </aside>
+
+  <div style="flex:1;min-width:0;display:flex;">
+    <main style="flex:1;min-width:0;">
+      <div class="topbar-mobile"><div class="tb-brand"><img src="vani_logo.png">VANI</div><div style="display:flex;gap:6px"><button id="fs-btn" title="Fullscreen">⛶</button><button data-go="notifications">🔔</button></div></div>
+      <div class="center" id="center"></div>
+    </main>
+    <aside class="right-rail" id="right-rail"></aside>
+  </div>
+
+  <nav class="bottom-nav" id="bottom-nav"></nav>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ==========================================================================
+   KRUSHI ECOSYSTEMS CENTRAL CONFIGURATION
+   ========================================================================== */
+const KRUSHI_CONFIG = {
+  API_BASE: (window.location.origin && window.location.origin.startsWith('http')) ? window.location.origin : 'http://localhost:5000',
+  AUTH_URL: (window.location.origin && window.location.origin.startsWith('http')) ? window.location.origin + '/login/' : 'http://localhost:5000/login/',
+  AAHAR_URL: (window.location.origin && window.location.origin.startsWith('http')) ? window.location.origin + '/aahar/' : 'http://localhost:5000/aahar/',
+  SETU_URL: (window.location.origin && window.location.origin.startsWith('http')) ? window.location.origin + '/setu/' : 'http://localhost:5000/setu/',
+  VANI_URL: (window.location.origin && window.location.origin.startsWith('http')) ? window.location.origin + '/vani/' : 'http://localhost:5000/vani/',
+  APP_ID: 'VANI'
+};
+/* ---------------- Mock data ---------------- */
+const SPACES = [
+  {id:'agri', name:'Agriculture', icon:'🌾', desc:'Crop prices, farming techniques, weather advisories and rural policy.', members:18400},
+  {id:'tech', name:'Technology', icon:'💻', desc:'Software, hardware, startups and the tools shaping tomorrow.', members:52100},
+  {id:'politics', name:'Politics', icon:'🏛️', desc:'Policy, elections and governance, explained without the noise.', members:41200},
+  {id:'business', name:'Business', icon:'💼', desc:'Markets, companies and the economy in plain language.', members:33900},
+  {id:'sports', name:'Sports', icon:'🏆', desc:'Scores, transfers and the matches everyone is talking about.', members:47600},
+  {id:'science', name:'Science', icon:'🔬', desc:'Research, discovery and the questions we are still answering.', members:21700},
+  {id:'entertainment', name:'Entertainment', icon:'🎬', desc:'Film, music and culture worth your evening.', members:29300},
+  {id:'local', name:'Local News', icon:'📍', desc:'What is happening in your district, town and neighbourhood.', members:15800},
+  {id:'education', name:'Education', icon:'📚', desc:'Schools, exams, scholarships and learning policy.', members:12100},
+];
+const spaceMap = Object.fromEntries(SPACES.map(s=>[s.id,s]));
+let joined = new Set(['agri','tech']);
+
+const AUTHORS = ['Meera Nair','Arjun Rao','Sunita Devi','Kabir Shah','Priya Iyer','Farhan Ali','Divya Menon'];
+function rndAuthor(){return AUTHORS[Math.floor(Math.random()*AUTHORS.length)];}
+
+let POSTS = [
+  {id:'p1',type:'news',space:'agri',title:'Monsoon arrives early, farmers advised on sowing schedule',summary:'The meteorological department reports an early monsoon onset across three states, prompting revised sowing advisories for kharif crops.',source:'AgriTimes',time:'2h ago',up:212,down:14,comments:[{a:'Sunita Devi',t:'Finally some good news for the wheat belt.',w:'1h ago'},{a:'Kabir Shah',t:'Hope the irrigation department is ready this time.',w:'40m ago'}]},
+  {id:'p2',type:'discussion',space:'agri',title:'Best organic pesticide for tomato blight this season?',body:'My tomato crop is showing early blight symptoms. Looking for organic options that have actually worked for people here.',author:'Priya Iyer',time:'5h ago',up:88,down:6,comments:[{a:'Farhan Ali',t:'Neem oil spray every 5 days worked well for me.',w:'3h ago'}]},
+  {id:'p3',type:'news',space:'tech',title:'Regional startup raises funding to expand rural broadband',summary:'A homegrown ISP announced a new funding round aimed at bringing fibre connectivity to under-served villages.',source:'TechDesk',time:'3h ago',up:341,down:22,comments:[{a:'Arjun Rao',t:'This could genuinely change access to online markets for farmers.',w:'2h ago'}]},
+  {id:'p4',type:'discussion',space:'tech',title:'Which budget smartphone actually lasts 2+ years?',body:'Looking for recommendations under 15k that will still feel usable after two years of daily use.',author:'Kabir Shah',time:'8h ago',up:154,down:31,comments:[]},
+  {id:'p5',type:'news',space:'politics',title:'New rural infrastructure bill clears committee stage',summary:'The proposed bill allocates funding for road and market-yard upgrades in over 400 districts nationwide.',source:'The Ledger',time:'6h ago',up:276,down:64,comments:[{a:'Divya Menon',t:'Implementation timelines are the real question here.',w:'4h ago'}]},
+  {id:'p6',type:'news',space:'business',title:'Wholesale vegetable prices dip after bumper harvest',summary:'Mandi prices for onion and tomato have eased over the past week as supply from the recent harvest reaches markets.',source:'MarketWatch',time:'1d ago',up:98,down:9,comments:[]},
+  {id:'p7',type:'news',space:'sports',title:'Local cricket academy sends five players to state trials',summary:'A district-level academy has seen its largest ever cohort selected for state-level trials this season.',source:'SportsLine',time:'10h ago',up:167,down:5,comments:[{a:'Meera Nair',t:'Great to see grassroots programs paying off.',w:'6h ago'}]},
+  {id:'p8',type:'discussion',space:'science',title:'Explainer: why this year\u2019s heatwaves are lasting longer',body:'Been reading about heat dome patterns — does anyone have good sources explaining why these events are getting more persistent?',author:'Divya Menon',time:'12h ago',up:203,down:18,comments:[{a:'Priya Iyer',t:'IMD\u2019s public reports are a solid starting point.',w:'9h ago'}]},
+  {id:'p9',type:'news',space:'education',title:'State announces revised scholarship criteria for rural students',summary:'Income and residency thresholds have been updated for the upcoming academic year\u2019s scholarship cycle.',source:'EduBeat',time:'14h ago',up:132,down:11,comments:[]},
+  {id:'p10',type:'news',space:'local',title:'New water treatment plant to serve twelve villages',summary:'Construction begins this month on a facility expected to improve drinking water access across the block.',source:'District Herald',time:'1d ago',up:189,down:7,comments:[]},
+  {id:'p11',type:'discussion',space:'entertainment',title:'Underrated regional films worth watching this month',body:'Looking to expand beyond the usual big releases — what regional cinema has impressed you recently?',author:'Farhan Ali',time:'16h ago',up:74,down:4,comments:[]},
+];
+let votes = {}; // postId -> 'up'|'down'
+let saved = new Set();
+
+const ADS = [
+  {ic:'🚜',title:'Rentakisan — rent farm equipment by the hour',sub:'Sponsored · Tractors, tillers and harvesters near you'},
+  {ic:'🌱',title:'AgroGrow organic fertiliser',sub:'Sponsored · 20% off your first order'},
+  {ic:'📡',title:'Get VANI Pro for offline news sync',sub:'Sponsored · Read Spaces even without signal'},
+];
+
+/* ---------------- Auth & session ---------------- */
+const $ = id => document.getElementById(id);
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e) { return d; } },
+  set(k, v) { try { if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} }
+};
+
+let session = store.get('vani_session', null);
+let isSignup = false;
+
+function setAuthMode(su) {
+  isSignup = su;
+  if (su) {
+    // Redirect to Central Krushi Login for registration
+    const returnUrl = window.location.href.split('?')[0];
+    window.location.href = KRUSHI_CONFIG.AUTH_URL + '?app=VANI&redirect_uri=' + encodeURIComponent(returnUrl) + '#register';
+    return;
+  }
+  $('f-name').classList.toggle('field-hidden', true);
+  $('auth-submit').textContent = 'Sign in';
+  $('auth-switch').innerHTML = 'New to VANI? <b id="auth-toggle">Create an account</b>';
+  $('auth-err').textContent = '';
+  $('auth-toggle').onclick = () => setAuthMode(true);
+}
+$('auth-toggle').onclick = () => setAuthMode(true);
+
+$('auth-submit').onclick = async () => {
+  const id = $('in-email').value.trim();
+  const pass = $('in-pass').value;
+  if (!id || !pass) { $('auth-err').textContent = 'Enter email or mobile, and password.'; return; }
+
+  try {
+    const res = await fetch(KRUSHI_CONFIG.API_BASE + '/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, password: pass })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      $('auth-err').textContent = data.message || 'Incorrect credentials.';
+      return;
+    }
+    session = {
+      token: data.accessToken,
+      profile: data.profile,
+      email: data.profile.email || data.profile.mobile
+    };
+    store.set('vani_session', session);
+    boot();
+  } catch (err) {
+    $('auth-err').textContent = 'Could not connect to Krushi server.';
+  }
+};
+
+async function handleSsoCallback() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get('code');
+  if (code) {
+    try {
+      const res = await fetch(KRUSHI_CONFIG.API_BASE + '/auth/exchange', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, app: 'VANI' })
+      });
+      const data = await res.json();
+      if (res.ok && data.accessToken) {
+        session = {
+          token: data.accessToken,
+          profile: data.profile,
+          email: data.profile.email || data.profile.mobile
+        };
+        store.set('vani_session', session);
+        window.history.replaceState({}, document.title, window.location.pathname);
+        return true;
+      }
+    } catch (e) {
+      console.warn('VANI SSO exchange error:', e);
+    }
+  }
+  return false;
+}
+
+/* ---------------- Nav / state ---------------- */
+const NAV=[
+  {id:'home',ic:'🏠',lb:'Home'},{id:'spaces',ic:'🗂️',lb:'Spaces'},{id:'trending',ic:'📈',lb:'Trending'},
+  {id:'create',ic:'✏️',lb:'Create'},{id:'notifications',ic:'🔔',lb:'Alerts'},{id:'profile',ic:'👤',lb:'Profile'},
+];
+let state={view:'home',spaceId:null,postId:null};
+
+function go(view,extra){ state.view=view; Object.assign(state,extra||{}); render(); window.scrollTo(0,0); }
+document.addEventListener('click',e=>{
+  const g=e.target.closest('[data-go]'); if(g){go(g.dataset.go, g.dataset.space?{spaceId:g.dataset.space}:g.dataset.post?{postId:g.dataset.post}:null);}
+});
+
+async function boot() {
+  $('auth').classList.remove('active');
+  $('app').classList.add('active');
+
+  // Sync latest shared profile from server
+  if (session && session.token) {
+    try {
+      const pRes = await fetch(KRUSHI_CONFIG.API_BASE + '/me', {
+        headers: { 'Authorization': 'Bearer ' + session.token }
+      });
+      const pData = await pRes.json();
+      if (pRes.ok && pData.profile) {
+        session.profile = pData.profile;
+        store.set('vani_session', session);
+      }
+    } catch(e) {}
+  }
+
+  const p = (session && session.profile) || {};
+  const name = p.name || 'Krushi Member';
+  const role = p.role || 'Farmer';
+
+  $('rail-avatar').textContent = (name[0] || 'K').toUpperCase();
+  $('rail-name').textContent = name;
+  $('rail-un').textContent = '@' + name.split(' ')[0].toLowerCase() + ' · ' + role;
+
+  renderRailNav();
+  renderBottomNav();
+  render();
+
+  // Load real posts and user votes from backend
+  await loadServerPosts();
+  await loadServerVotes();
+}
+
+async function loadServerPosts() {
+  try {
+    const res = await fetch(KRUSHI_CONFIG.API_BASE + '/vani/posts');
+    const data = await res.json();
+    if (res.ok && Array.isArray(data) && data.length) {
+      POSTS = data.map(p => ({
+        ...p,
+        space: p.space_id || p.space,
+        author: p.author_name || p.author || 'Krushi Editor',
+        time: 'recently',
+        comments: p.comments || []
+      }));
+      render();
+    }
+  } catch(e) {}
+}
+
+async function loadServerVotes() {
+  if (session && session.token) {
+    try {
+      const res = await fetch(KRUSHI_CONFIG.API_BASE + '/vani/my-votes', {
+        headers: { 'Authorization': 'Bearer ' + session.token }
+      });
+      const data = await res.json();
+      if (res.ok && data) {
+        votes = data;
+        render();
+      }
+    } catch(e) {}
+  }
+}
+
+function renderRailNav(){
+  $('rail-nav').innerHTML=NAV.filter(n=>n.id!=='create').map(n=>`<div class="rail-item${state.view===n.id?' active':''}" data-go="${n.id}"><span class="ic">${n.ic}</span>${n.lb}</div>`).join('');
+}
+function renderBottomNav(){
+  $('bottom-nav').innerHTML=NAV.map(n=> n.id==='create'
+    ? `<div class="bn-item"><button class="bn-fab" data-go="create">+</button></div>`
+    : `<div class="bn-item${state.view===n.id?' active':''}" data-go="${n.id}"><span class="ic">${n.ic}</span>${n.lb}</div>`
+  ).join('');
+}
+
+function score(p){return p.up-p.down;}
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1600);}
+
+function voteWidget(p,vertical){
+  const v=votes[p.id];
+  return `<div class="vote">
+    <button class="${v==='up'?'voted-up':''}" data-vote="${p.id}" data-dir="up">▲</button>
+    <span class="score">${score(p)}</span>
+    <button class="${v==='down'?'voted-down':''}" data-vote="${p.id}" data-dir="down">▼</button>
+  </div><span class="vote-counts">${p.up} up · ${p.down} down</span>`;
+}
+document.addEventListener('click',e=>{
+  const vb=e.target.closest('[data-vote]'); if(!vb)return;
+  const p=POSTS.find(x=>x.id===vb.dataset.id||x.id===vb.dataset.vote); const dir=vb.dataset.dir;
+  const cur=votes[p.id];
+  if(cur==='up')p.up--; if(cur==='down')p.down--;
+  if(cur===dir){delete votes[p.id];} else {votes[p.id]=dir; p[dir]++;}
+  render();
+});
+document.addEventListener('click',e=>{
+  const sb=e.target.closest('[data-save]'); if(!sb)return;
+  const id=sb.dataset.save; saved.has(id)?saved.delete(id):saved.add(id); render();
+});
+document.addEventListener('click',e=>{
+  const sb=e.target.closest('[data-share]'); if(sb) toast('Link copied to clipboard');
+});
+document.addEventListener('click',e=>{
+  const jb=e.target.closest('[data-join]'); if(!jb)return;
+  const id=jb.dataset.join; joined.has(id)?joined.delete(id):joined.add(id); render();
+});
+
+function adCard(i){
+  const ad=ADS[i%ADS.length];
+  return `<div class="ad-card"><div class="ad-label"><span>Sponsored</span><span>Ad</span></div>
+    <div class="ad-body"><div class="ad-ic">${ad.ic}</div><div><p class="ad-title">${ad.title}</p><p class="ad-sub">${ad.sub}</p></div></div></div>`;
+}
+function postCard(p){
+  const sp=spaceMap[p.space];
+  const head = p.type==='news'
+    ? `<h3 class="headline" data-go="post-detail" data-post="${p.id}" style="cursor:pointer">${p.title}</h3><p class="summary">${p.summary}</p><div class="thumb" style="background:linear-gradient(135deg,var(--saffron-soft),#fff)">${sp.icon}</div>`
+    : `<h3 class="headline" data-go="post-detail" data-post="${p.id}" style="cursor:pointer">${p.title}</h3><p class="summary">${p.body}</p>`;
+  return `<div class="card">
+    <div class="card-top"><span class="space-tag" data-go="space-detail" data-space="${sp.id}" style="cursor:pointer">${sp.icon} ${sp.name}</span>
+      <span>${p.type==='news'? p.source : p.author} · ${p.time}</span></div>
+    ${head}
+    <div class="card-actions">
+      ${voteWidget(p)}
+      <button class="act-btn" data-go="post-detail" data-post="${p.id}">💬 ${p.comments.length}</button>
+      <button class="act-btn" data-share>↗ Share</button>
+      <button class="act-btn ${saved.has(p.id)?'saved':''}" data-save="${p.id}">${saved.has(p.id)?'★ Saved':'☆ Save'}</button>
+    </div>
+  </div>`;
+}
+
+function renderRightRail(){
+  $('right-rail').innerHTML = `
+    <div class="ad-banner"><div><p class="ad-title" style="margin:0 0 2px">VANI Weather Alerts</p><p class="ad-sub">Sponsored · SMS advisories for your block</p></div><span class="ad-ic" style="width:38px;height:38px;font-size:18px">⛈️</span></div>
+    <div class="widget"><h4>Trending Spaces</h4>${SPACES.slice().sort((a,b)=>b.members-a.members).slice(0,5).map(s=>`
+      <div class="space-row"><div class="ic">${s.icon}</div><div class="nm">${s.name}</div><div class="mem">${(s.members/1000).toFixed(1)}k</div></div>`).join('')}</div>
+    ${sideAd(0)}
+    <div class="widget"><h4>About VANI</h4><p style="font-size:12.5px;color:var(--muted);line-height:1.6;margin:0">Village Agri News &amp; Information — news and discussion, organised by topic, without the noise.</p></div>
+  `;
+}
+function sideAd(i){const ad=ADS[i%ADS.length];return `<div class="side-ad"><div class="ad-ic">${ad.ic}</div><p class="ad-title">${ad.title}</p><p class="ad-sub">${ad.sub}</p></div>`;}
+
+function render(){
+  renderRailNav(); renderBottomNav(); renderRightRail();
+  const c=$('center'); const v=state.view;
+  if(v==='home') return renderHome(c);
+  if(v==='spaces') return renderSpaces(c);
+  if(v==='space-detail') return renderSpaceDetail(c);
+  if(v==='trending') return renderTrending(c);
+  if(v==='create') return renderCreate(c);
+  if(v==='notifications') return renderNotifications(c);
+  if(v==='profile') return renderProfile(c);
+  if(v==='post-detail') return renderPostDetail(c);
+}
+
+function renderHome(c){
+  let html=`<p class="section-title">Home feed</p>`;
+  POSTS.forEach((p,i)=>{ html+=postCard(p); if((i+1)%4===0) html+=adCard(i); });
+  c.innerHTML=html;
+}
+function renderSpaces(c){
+  c.innerHTML=`<p class="section-title">Spaces</p><div class="spaces-grid">${SPACES.map(s=>`
+    <div class="space-card"><div class="ic">${s.icon}</div><h4 data-go="space-detail" data-space="${s.id}" style="cursor:pointer">${s.name}</h4>
+    <p>${s.desc}</p><div class="meta">${(s.members/1000).toFixed(1)}k members</div>
+    <button class="join-btn ${joined.has(s.id)?'joined':''}" data-join="${s.id}">${joined.has(s.id)?'Joined':'Join'}</button></div>`).join('')}</div>`;
+}
+function renderSpaceDetail(c){
+  const s=spaceMap[state.spaceId]||SPACES[0];
+  const posts=POSTS.filter(p=>p.space===s.id);
+  const tab=state.spaceTab||'trending';
+  const sorted = tab==='trending'? posts.slice().sort((a,b)=>score(b)-score(a))
+    : tab==='latest'? posts.slice().reverse()
+    : posts.slice().sort((a,b)=>b.up-a.up);
+  c.innerHTML=`<a class="back-link" data-go="spaces">← All Spaces</a>
+  <div class="space-hero"><div class="ic">${s.icon}</div><div><h2>${s.name}</h2><p>${s.desc}</p>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:8px">${(s.members/1000).toFixed(1)}k members</div>
+    <button class="join-btn ${joined.has(s.id)?'joined':''}" data-join="${s.id}">${joined.has(s.id)?'Joined':'Join Space'}</button></div></div>
+  ${adCard(1)}
+  <div class="tabs">
+    <button class="tab ${tab==='trending'?'active':''}" data-stab="trending">Trending</button>
+    <button class="tab ${tab==='latest'?'active':''}" data-stab="latest">Latest</button>
+    <button class="tab ${tab==='popular'?'active':''}" data-stab="popular">Popular</button>
+  </div>
+  ${sorted.length? sorted.map(postCard).join('') : '<p style="color:var(--muted);font-size:13px">No discussions in this Space yet — start one!</p>'}
+  `;
+}
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-stab]'); if(!t)return; state.spaceTab=t.dataset.stab; render();
+});
+function renderTrending(c){
+  const sorted=POSTS.slice().sort((a,b)=>score(b)-score(a));
+  c.innerHTML=`<p class="section-title">Trending across VANI</p>${sorted.map((p,i)=> i===2? postCard(p)+adCard(2) : postCard(p)).join('')}`;
+}
+function renderCreate(c){
+  c.innerHTML=`<p class="section-title">Start a discussion</p>
+  <div class="card composer-form">
+    <div class="field"><label>Space</label><select id="cp-space">${SPACES.map(s=>`<option value="${s.id}">${s.icon} ${s.name}</option>`).join('')}</select></div>
+    <div class="field"><label>Title</label><input id="cp-title" placeholder="What's on your mind?"></div>
+    <div class="field"><label>Body</label><textarea id="cp-body" placeholder="Add details, context or a question for the community..."></textarea></div>
+    <label class="img-toggle"><input type="checkbox" id="cp-img"> Attach an image placeholder</label>
+    <button class="btn-cta" id="cp-submit">Post to Space</button>
+  </div>`;
+  $('cp-submit').onclick=()=>{
+    const title=$('cp-title').value.trim(), body=$('cp-body').value.trim(), sp=$('cp-space').value;
+    if(!title||!body){toast('Add a title and body first');return;}
+    const id='p'+Date.now();
+    POSTS.unshift({id,type:'discussion',space:sp,title,body,author:users[session.email].name,time:'just now',up:1,down:0,comments:[]});
+    toast('Discussion posted'); go('space-detail',{spaceId:sp,spaceTab:'latest'});
+  };
+}
+function renderNotifications(c){
+  const items=[
+    {ic:'▲',t:'Your post "Best organic pesticide for tomato blight" reached 88 upvotes.',w:'1h ago'},
+    {ic:'💬',t:'Farhan Ali commented on your discussion.',w:'3h ago'},
+    {ic:'🗂️',t:'New trending discussion in Agriculture Space.',w:'6h ago'},
+    {ic:'👋',t:'Welcome to VANI — join a few Spaces to personalise your feed.',w:'1d ago'},
+  ];
+  c.innerHTML=`<p class="section-title">Notifications</p><div class="card" style="padding:4px 16px">${items.map(n=>`
+    <div class="notif"><div class="ic">${n.ic}</div><div><div class="tx">${n.t}</div><div class="tm">${n.w}</div></div></div>`).join('')}</div>`;
+}
+function renderProfile(c) {
+  const p = (session && session.profile) || {};
+  const name = p.name || 'Krushi Member';
+  const role = p.role || 'Farmer';
+  const loc = p.village ? (p.village + ', ' + (p.district || '')) : 'Maharashtra, India';
+  const crops = p.crops ? (' · ' + p.crops) : '';
+  const myPosts = POSTS.filter(x => x.author === name);
+
+  c.innerHTML = `<div class="profile-head">
+    <div class="profile-avatar">${(name[0] || 'K').toUpperCase()}</div>
+    <h2>${name}</h2>
+    <div class="un">@${name.split(' ')[0].toLowerCase()} · ${role} · ${loc}${crops}</div>
+    <p class="bio">Active member of Krushi Ecosystem. Sharing farming updates and local agricultural news.</p>
+    <div class="stat-row">
+      <div class="st"><b>${joined.size}</b><span>Spaces</span></div>
+      <div class="st"><b>${myPosts.length}</b><span>Posts</span></div>
+      <div class="st"><b>${myPosts.reduce((a, x) => a + (x.comments ? x.comments.length : 0), 0)}</b><span>Comments</span></div>
+      <div class="st"><b>${myPosts.reduce((a, x) => a + score(x), 0) + 420}</b><span>Karma</span></div>
+    </div>
+    <button class="join-btn" id="btn-logout" style="margin-top:10px">Log out</button>
+  </div>
+  <p class="section-title">Joined Spaces</p>
+  <div class="spaces-grid">${[...joined].map(id => spaceMap[id]).filter(Boolean).map(s => `<div class="space-card"><div class="ic">${s.icon}</div><h4>${s.name}</h4><div class="meta">${(s.members/1000).toFixed(1)}k members</div></div>`).join('')||'<p style="color:var(--muted);font-size:13px">You haven’t joined any Spaces yet.</p>'}</div>
+  <p class="section-title" style="margin-top:18px">Your posts</p>
+  ${myPosts.length ? myPosts.map(postCard).join('') : '<p style="color:var(--muted);font-size:13px">Nothing posted yet.</p>'}`;
+
+  $('btn-logout').onclick = async () => {
+    if (session && session.token) {
+      try {
+        await fetch(KRUSHI_CONFIG.API_BASE + '/auth/logout', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + session.token }
+        });
+      } catch(e) {}
+    }
+    session = null;
+    store.set('vani_session', null);
+    $('app').classList.remove('active');
+    $('auth').classList.add('active');
+    toast('Logged out');
+  };
+}
+function renderPostDetail(c){
+  const p=POSTS.find(x=>x.id===state.postId); if(!p) return go('home');
+  const sp=spaceMap[p.space];
+  c.innerHTML=`<a class="back-link" data-go="home">← Back to feed</a>
+  <div class="card">
+    <div class="card-top"><span class="space-tag" data-go="space-detail" data-space="${sp.id}" style="cursor:pointer">${sp.icon} ${sp.name}</span><span>${p.type==='news'?p.source:p.author} · ${p.time}</span></div>
+    <h2 class="headline" style="font-size:22px">${p.title}</h2>
+    <p class="summary" style="font-size:14.5px">${p.type==='news'?p.summary:p.body}</p>
+    ${p.type==='news'?`<div class="thumb" style="height:220px;background:linear-gradient(135deg,var(--saffron-soft),#fff);font-size:44px">${sp.icon}</div>`:''}
+    <div class="card-actions">${voteWidget(p)}<button class="act-btn" data-share>↗ Share</button><button class="act-btn ${saved.has(p.id)?'saved':''}" data-save="${p.id}">${saved.has(p.id)?'★ Saved':'☆ Save'}</button></div>
+  </div>
+  <div class="card">
+    <p class="section-title">Comments (${p.comments.length})</p>
+    <div class="comment-input"><input id="cm-in" placeholder="Add a comment..."><button class="btn-cta" style="width:auto;padding:10px 16px" id="cm-send">Post</button></div>
+    ${p.comments.map(cm=>`<div class="comment"><div class="ca"><div class="avatar-sm">${cm.a[0]}</div><span class="who">${cm.a}</span><span class="when">${cm.w}</span></div><div class="body">${cm.t}</div></div>`).join('')}
+  </div>`;
+  $('cm-send').onclick = async () => {
+    const v = $('cm-in').value.trim();
+    if (!v) return;
+    const authorName = (session && session.profile && session.profile.name) || 'Krushi Member';
+    p.comments = p.comments || [];
+    p.comments.push({ a: authorName, t: v, w: 'just now' });
+    renderPostDetail(c);
+
+    // Save comment to backend
+    if (session && session.token) {
+      try {
+        await fetch(KRUSHI_CONFIG.API_BASE + '/vani/posts/' + p.id + '/comments', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + session.token
+          },
+          body: JSON.stringify({ body: v })
+        });
+      } catch(e) {}
+    }
+  };
+}
+
+(async function init() {
+  const ssoExchanged = await handleSsoCallback();
+  if (ssoExchanged || (session && session.token)) {
+    boot();
+  } else {
+    $('app').classList.remove('active');
+    $('auth').classList.add('active');
+  }
+})();
+/* fullscreen — disabled: requestFullscreen hides browser chrome & taskbar (looks like browser crash) */
+function toggleFS(){
+  toast('Fullscreen mode is disabled for stability.');
+}
+const fsBtn=$('fs-btn'), fsBtnD=$('fs-btn-d');
+if(fsBtn) fsBtn.onclick=toggleFS;
+if(fsBtnD) fsBtnD.onclick=toggleFS;
+</script>
+</body>
+</html>

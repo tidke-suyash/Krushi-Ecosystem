@@ -1,0 +1,326 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Join Krushi Ecosystems</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600&display=swap">
+<style>
+:root{color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--cream:#F3EEE0;--mut:#b9b3a4;--leaf:#4FA36E;--teal:#3FA5B1;--saffron:#F2900E;--clay:#E2572B;
+--smoke:rgba(14,10,16,.62);--edge:rgba(255,255,255,.14);
+--d:'Bricolage Grotesque',system-ui,sans-serif;--b:'Hanken Grotesk',system-ui,sans-serif}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;min-height:100vh;font:400 16px/1.5 var(--b);color:var(--cream);background:#0c090e url(img_0.jpeg) center/cover fixed}
+body::before{content:"";position:fixed;inset:0;background:radial-gradient(120% 90% at 20% 10%,rgba(10,6,14,.35),rgba(8,5,10,.88));backdrop-filter:blur(7px) saturate(.8);-webkit-backdrop-filter:blur(7px) saturate(.8);z-index:0}
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:22px 22px 60px;display:grid;grid-template-columns:1.05fr 1fr;gap:44px;align-items:start}
+.top{grid-column:1/-1;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.login{font:600 15px var(--b);color:#14150F;background:var(--cream);border:0;border-radius:999px;padding:11px 22px;cursor:pointer;text-decoration:none}
+.login:hover{background:#fff}
+.top span{color:var(--mut);font-size:14px}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,label:focus-within{outline:2px solid var(--cream);outline-offset:3px}
+.intro{padding-top:30px}
+h1{font:800 clamp(40px,6vw,72px)/.98 var(--d);letter-spacing:-.03em;margin:0 0 16px}
+.intro p{color:var(--mut);max-width:44ch;margin:0 0 28px;font-size:17px}
+.apps{display:grid;gap:12px}
+.app{position:relative;display:flex;align-items:center;gap:16px;padding:14px 16px;border-radius:18px;border:1.5px solid var(--edge);background:var(--smoke);cursor:pointer;overflow:hidden;isolation:isolate;transition:border-color .2s,transform .2s;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.app::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--img) center/cover;opacity:.32;transition:opacity .25s}
+.app::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(12,9,14,.92) 35%,rgba(12,9,14,.3))}
+.app input{position:absolute;opacity:0}
+.app img{width:64px;height:64px;border-radius:14px;object-fit:cover;flex:none;background:#F5F1E6}
+.app b{display:block;font:700 22px var(--d);letter-spacing:.01em}
+.app small{color:var(--mut);font-size:13.5px;line-height:1.3;display:block}
+.tick{margin-left:auto;width:26px;height:26px;border-radius:50%;border:1.5px solid var(--mut);display:grid;place-items:center;flex:none;font-size:14px;color:transparent}
+.app:has(input:checked){border-color:var(--c)}
+.app:has(input:checked)::before{opacity:.55}
+.app:has(input:checked) .tick{background:var(--c);border-color:var(--c);color:#14150F;font-weight:700}
+.card{background:var(--smoke);border:1px solid var(--edge);border-radius:26px;padding:0 0 28px;backdrop-filter:blur(22px) saturate(.9);-webkit-backdrop-filter:blur(22px) saturate(.9);overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.bar{display:flex;height:6px}.bar i{flex:1}.bar i:nth-child(1){background:var(--leaf)}.bar i:nth-child(2){background:var(--teal)}.bar i:nth-child(3){background:var(--saffron)}
+.card h2{font:700 28px var(--d);margin:26px 28px 4px;letter-spacing:-.01em}
+.card>p{margin:0 28px 20px;color:var(--mut);font-size:15px}
+form{padding:0 28px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.f{display:grid;gap:6px}.f.w{grid-column:1/-1}
+label.l{font-size:13.5px;font-weight:600;color:#d9d3c4}
+input.i,select.i{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--edge);background:rgba(255,255,255,.07);color:var(--cream);font:inherit}
+select.i option{color:#14150F}
+input.i::placeholder{color:#8c8678}
+input.i:focus,select.i:focus{border-color:var(--cream);outline:none;background:rgba(255,255,255,.12)}
+.terms{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--mut);grid-column:1/-1}
+.terms input{margin-top:4px;accent-color:#4FA36E}
+.go{grid-column:1/-1;font:700 16px var(--d);padding:14px;border:0;border-radius:14px;color:#14150F;cursor:pointer;background:linear-gradient(90deg,var(--leaf),var(--teal),var(--saffron))}
+.go:hover{filter:brightness(1.1)}
+.note{grid-column:1/-1;text-align:center;font-size:14px;color:var(--mut);margin:0}
+.note a{color:var(--cream)}
+.err{grid-column:1/-1;color:#ff9b82;font-size:14px;margin:0;min-height:0}
+.done{display:none;padding:34px 28px 6px;text-align:center}
+.done h2{margin:0 0 8px}.done p{margin:0 auto 20px;color:var(--mut);max-width:34ch}
+.chips{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.chips img{width:56px;height:56px;border-radius:14px}
+.ok .done{display:block}.ok form,.ok .hd{display:none}
+.shared{list-style:none;margin:18px 0 0;padding:16px 18px;display:grid;gap:8px;border-radius:18px;border:1px solid var(--edge);background:var(--smoke);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);font-size:14.5px;color:var(--mut)}
+.shared b{color:var(--cream);font-weight:600}
+.app.soon{border-style:dashed;cursor:default;background:rgba(14,10,16,.4)}.app.soon::before,.app.soon::after{display:none}
+.plus{width:64px;height:64px;border-radius:14px;border:1.5px dashed var(--mut);display:grid;place-items:center;font:500 30px var(--d);color:var(--mut);flex:none}
+[hidden]{display:none!important}
+.apps{max-height:440px;overflow-y:auto;padding-right:4px;scrollbar-width:thin}
+.lt{width:64px;height:64px;border-radius:14px;display:grid;place-items:center;flex:none;font:700 28px var(--d);color:#14150F}
+.chips .lt{width:56px;height:56px}
+a.app{color:inherit;text-decoration:none}
+.open{margin-left:auto;font:600 14px var(--b);color:var(--c);border:1px solid var(--c);border-radius:999px;padding:6px 14px}
+.prof{margin:0;padding:0 28px;display:grid;gap:12px}
+.prof div{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid var(--edge);padding-bottom:10px}
+.prof dt{color:var(--mut);font-size:14px}.prof dd{margin:0;font-weight:600;text-align:right}
+.av{width:64px;height:64px;border-radius:50%;background:var(--cream);color:#14150F;display:grid;place-items:center;font:800 28px var(--d)}
+#v-login .card,#v-account .card{margin-top:30px}
+@media(max-width:900px){.wrap{grid-template-columns:1fr;gap:26px}.intro{padding-top:6px}}
+@media(max-width:520px){form{grid-template-columns:1fr}.card h2,.card>p,form{margin-left:0;margin-right:0}.card h2,.card>p{padding:0 20px;margin-left:0}form{padding:0 20px}}
+</style></head><body>
+<main class="wrap" id="v-register">
+<div class="top"><a class="login" id="login" href="#login">Login Krushi Ecosystems</a><span>Already registered? One login opens all three apps.</span></div>
+<section class="intro">
+<h1>One account.<br>Three apps.<br>Your whole farm.</h1>
+<p>Register once for Krushi Ecosystems and pick the apps you want: grow smarter, sell fairer, stay informed.</p>
+<input class="i" id="q" type="search" placeholder="Search apps" aria-label="Search apps" hidden style="margin-bottom:12px"><div class="apps" id="apps" role="group" aria-label="Choose your apps"></div>
+<ul class="shared"><li><b>Set up once.</b> Name, village, language and crops follow you into every app.</li><li><b>One login.</b> A single Krushi account opens AAHAR, SETU, VANI and every app we add next.</li><li><b>Shared data.</b> Apps read from one profile, so nothing is typed twice.</li></ul></section>
+<section class="card" id="card"><div class="bar"><i></i><i></i><i></i></div>
+<h2 class="hd">Create your Krushi account</h2><p class="hd">This profile is shared by every Krushi app, so you fill it only once.</p>
+<<form id="reg" autocomplete="off" novalidate>
+<div class="f"><label class="l" for="n">Full name</label><input class="i" id="n" required autocomplete="off" placeholder="Ramesh Patil"></div>
+<div class="f"><label class="l" for="m">Mobile number</label><input class="i" id="m" required inputmode="tel" autocomplete="off" placeholder="98765 43210"></div>
+<div class="f"><label class="l" for="v">Village / Town</label><input class="i" id="v" required autocomplete="off" placeholder="Your village"></div>
+<div class="f"><label class="l" for="d">District</label><input class="i" id="d" required autocomplete="off" placeholder="e.g. Nashik"></div>
+<div class="f"><label class="l" for="r">I am a</label><select class="i" id="r"><option>Farmer</option><option>Trader / Buyer</option><option>Village reporter</option><option>Agri expert</option><option>Other</option></select></div>
+<div class="f w"><label class="l" for="g">Preferred language</label><select class="i" id="g"><option>English</option><option>मराठी</option><option>हिंदी</option></select></div>
+<div class="f w"><label class="l" for="c">Main crops (optional)</label><input class="i" id="c" autocomplete="off" placeholder="e.g. Onion, Grapes, Soybean"></div>
+<div class="f w"><label class="l" for="e">Email (optional)</label><input class="i" id="e" type="email" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="you@example.com"></div>
+<div class="f w"><label class="l" for="p">Password</label><input class="i" id="p" type="password" minlength="8" required autocomplete="new-password" placeholder="At least 8 characters"></div>
+<label class="terms"><input type="checkbox" id="t" required> I agree to the Terms and Privacy Policy of Krushi Ecosystems.</label>
+<p class="err" id="err" role="alert"></p>
+<button class="go" type="submit">Register for Krushi Ecosystems</button>
+<p class="note">Already have an account? <a href="#login">Login Krushi Ecosystems</a></p>
+</form>
+<div class="done" id="done" aria-live="polite"><h2>Welcome to Krushi, <span id="who"></span>.</h2><p>Your account is ready. These apps are now open to you:</p><div class="chips" id="chips"></div><button class="go" type="button" id="toacct" style="width:100%;margin-top:22px">Open my account</button></div>
+</section></main>
+<main class="wrap" id="v-login" hidden>
+<div class="top"><a class="login" href="#register">Create Krushi account</a><span>New here? Register once, use every app.</span></div>
+<section class="intro"><h1>Welcome<br>back.</h1><p>Log in once to reach all your Krushi apps and your shared profile.</p></section>
+<section class="card"><div class="bar"><i></i><i></i><i></i></div><h2>Login Krushi Ecosystems</h2><p>Use the mobile number or email you registered with.</p>
+<form id="lf" autocomplete="off" novalidate><div class="f w"><label class="l" for="li">Mobile or email</label><input class="i" id="li" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="98765 43210 or you@example.com"></div>
+<div class="f w"><label class="l" for="lp">Password</label><input class="i" id="lp" type="password" autocomplete="current-password"></div>
+<p class="err" id="lerr" role="alert"></p><button class="go" type="submit">Login</button>
+<p class="note">No account yet? <a href="#register">Register for Krushi Ecosystems</a></p></form></section></main>rm></section></main>
+<main class="wrap" id="v-account" hidden>
+<div class="top"><a class="login" href="#login" id="out">Log out</a><span>Signed in to Krushi Ecosystems</span></div>
+<section class="intro"><h1 id="hi">Hello</h1><p>These are the apps you are signed in to, all on one account.</p><div class="apps" id="myapps"></div></section>
+<section class="card"><div class="bar"><i></i><i></i><i></i></div><h2>Profile</h2><p>Shared by all your apps. Change it once and it updates everywhere.</p><dl class="prof" id="prof"></dl></section></main>
+<script>
+/* ===== KRUSHI CONFIG: connect the backend here =====
+ API_BASE ""  -> demo mode, no network call. Set to your API origin once the backend exists.
+ POST {API_BASE}{REGISTER_PATH}  JSON: {profile:{name,mobile,village,district,role,language,crops,email}, password, apps:["AAHAR",...]}
+ Expected reply 2xx: {user:{id,name}, apps:[...]}. Any non-2xx: {message} is shown to the user.
+ LOGIN_URL is where "Login Krushi Ecosystems" goes (shared sign-in for all apps). */
+/* ===== KRUSHI CENTRAL CONFIGURATION ===== */
+var KRUSHI_CONFIG = {
+  API_BASE: (window.location.origin && window.location.origin.startsWith('http')) ? window.location.origin : 'http://localhost:5000',
+  KRUSHI_LOGIN_URL: (window.location.origin && window.location.origin.startsWith('http')) ? window.location.origin + '/login/' : 'http://localhost:5000/login/',
+  AAHAR_URL: (window.location.origin && window.location.origin.startsWith('http')) ? window.location.origin + '/aahar/' : 'http://localhost:5000/aahar/',
+  SETU_URL: (window.location.origin && window.location.origin.startsWith('http')) ? window.location.origin + '/setu/' : 'http://localhost:5000/setu/',
+  VANI_URL: (window.location.origin && window.location.origin.startsWith('http')) ? window.location.origin + '/vani/' : 'http://localhost:5000/vani/'
+};
+var CONFIG = {
+  API_BASE: KRUSHI_CONFIG.API_BASE,
+  REGISTER_PATH: '/auth/register',
+  LOGIN_PATH: '/auth/login',
+  LOGIN_URL: '#login'
+};
+/* ===== APP REGISTRY: add a new Krushi app = add one object here (soon:true shows a placeholder slot) ===== */
+var APPS=[
+{id:"AAHAR",name:"AAHAR",tag:"Agricultural AI for harvest analysis & recommendation",color:"#4FA36E",logo:"img_1.jpeg",bg:"img_2.jpeg"},
+{id:"SETU",name:"SETU",tag:"Smart e-market for trading & upliftment",color:"#3FA5B1",logo:"img_3.jpeg",bg:"img_4.jpeg"},
+{id:"VANI",name:"VANI",tag:"Village agri news & information",color:"#F2900E",logo:"img_5.jpeg",bg:"img_6.jpeg"},
+{id:"NEXT",soon:true,name:"Your next app",tag:"New Krushi apps appear here and join your account automatically"}
+];
+APPS[0].url = KRUSHI_CONFIG.AAHAR_URL;
+APPS[1].url = KRUSHI_CONFIG.SETU_URL;
+APPS[2].url = KRUSHI_CONFIG.VANI_URL;
+var $=function(i){return document.getElementById(i)};
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function lt(a){return a.logo?'<img src="'+a.logo+'" alt="">':'<span class="lt" style="background:'+a.color+'">'+esc(a.name[0])+'</span>'}
+function img(a){return a.bg?'url('+a.bg+')':'none'}
+var real=APPS.filter(function(a){return !a.soon});
+$('apps').innerHTML=APPS.map(function(a){
+ if(a.soon)return '<div class="app soon" data-s="1"><span class="plus">+</span><span><b>'+a.name+'</b><small>'+a.tag+'</small></span></div>';
+ return '<label class="app" data-s="'+esc((a.name+' '+a.tag).toLowerCase())+'" style="--c:'+a.color+';--img:'+img(a)+'"><input type="checkbox" name="app" value="'+a.id+'" form="reg" checked>'+lt(a)+'<span><b>'+a.name+'</b><small>'+a.tag+'</small></span><span class="tick">✓</span></label>'}).join('');
+if(real.length>4)$('q').hidden=false;
+$('q').addEventListener('input',function(){var t=this.value.toLowerCase();document.querySelectorAll('#apps .app').forEach(function(e){e.hidden=t&&e.dataset.s.indexOf(t)<0})});
+var KS='krushi_session',session=null;
+function ld(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}}
+function sv(k,v){try{v===null?localStorage.removeItem(k):localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+session=ld(KS);
+
+async function handleSsoRedirect(){
+  var p=new URLSearchParams(window.location.search);
+  var app=p.get('app'),ru=p.get('redirect_uri');
+  if(app&&ru&&session&&session.token){
+    try{
+      var r=await fetch(CONFIG.API_BASE+'/auth/sso-code',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.token},
+        body:JSON.stringify({app:app,redirect_uri:ru})
+      });
+      var d=await r.json();
+      if(r.ok&&d.code){
+        var sep=ru.indexOf('?')>=0?'&':'?';
+        window.location.href=ru+sep+'code='+encodeURIComponent(d.code);
+        return true;
+      }
+    }catch(x){console.warn('SSO redirect error:',x);}
+  }
+  return false;
+}
+
+window.openAppWithSso = async function(appId, appUrl){
+  if(session&&session.token){
+    try{
+      var r=await fetch(CONFIG.API_BASE+'/auth/sso-code',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.token},
+        body:JSON.stringify({app:appId,redirect_uri:appUrl})
+      });
+      var d=await r.json();
+      if(r.ok&&d.code){
+        var sep=appUrl.indexOf('?')>=0?'&':'?';
+        window.location.href=appUrl+sep+'code='+encodeURIComponent(d.code);
+        return;
+      }
+    }catch(x){}
+  }
+  window.location.href=appUrl;
+};
+
+$('reg').addEventListener('submit',async function(ev){ev.preventDefault();
+  var err=$('err'),btn=ev.target.querySelector('.go'),v=function(i){return $(i).value.trim()},
+  apps=[].map.call(document.querySelectorAll('input[name=app]:checked'),function(x){return x.value});
+  if(!apps.length){err.textContent='Pick at least one app on the left.';return}
+  if(!v('n')||!v('m')||!v('v')||!v('d')||!$('p').value){err.textContent='Please fill in your name, mobile, village, district and password.';return}
+  if($('p').value.length<8){err.textContent='Password needs at least 8 characters.';return}
+  if(!$('t').checked){err.textContent='Please accept the terms to continue.';return}
+  err.textContent='';
+  var password=$('p').value;
+  var emailVal = v('e');
+  if(emailVal && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)){
+    err.textContent='Please enter a valid email address (e.g. you@example.com) or leave it empty.';
+    return;
+  }
+  var payload={profile:{name:v('n'),mobile:v('m'),village:v('v'),district:v('d'),role:v('r'),language:v('g'),crops:v('c'),email:emailVal},password:password,apps:apps};
+  btn.disabled=true;
+  try{
+    var r=await fetch(CONFIG.API_BASE+CONFIG.REGISTER_PATH,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    });
+    var j=await r.json().catch(function(){return{}});
+    if(!r.ok){
+      err.textContent=j.message||'Registration failed. Please try again.';
+      btn.disabled=false;
+      return;
+    }
+    // Auto-login to obtain session token
+    var lr=await fetch(CONFIG.API_BASE+CONFIG.LOGIN_PATH,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({id:v('m')||v('e'),password:password})
+    });
+    var lj=await lr.json().catch(function(){return{}});
+    if(lr.ok&&lj.accessToken){
+      session={token:lj.accessToken,profile:lj.profile,apps:lj.apps};
+      sv(KS,session);
+    } else {
+      session={token:null,profile:payload.profile,apps:apps};
+      sv(KS,session);
+    }
+  }catch(e){
+    err.textContent='Could not reach the server. Check your connection and try again.';
+    btn.disabled=false;
+    return;
+  }
+  $('who').textContent=payload.profile.name.split(' ')[0];
+  $('chips').innerHTML=apps.map(function(id){return lt(APPS.filter(function(x){return x.id===id})[0])}).join('');
+  btn.disabled=false;
+  var redirected = await handleSsoRedirect();
+  if(!redirected){
+    $('card').classList.add('ok');
+  }
+});
+
+$('toacct').addEventListener('click',function(){location.hash='#account'});
+
+$('lf').addEventListener('submit',async function(ev){ev.preventDefault();
+  var e=$('lerr'),id=$('li').value.trim(),pw=$('lp').value;
+  if(!id||!pw){e.textContent='Enter your mobile or email and password.';return}
+  e.textContent='';
+  try{
+    var r=await fetch(CONFIG.API_BASE+CONFIG.LOGIN_PATH,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({id:id,password:pw})
+    });
+    var j=await r.json().catch(function(){return{}});
+    if(!r.ok){e.textContent=j.message||'Login failed.';return}
+    session={token:j.accessToken,profile:j.profile,apps:j.apps};
+    sv(KS,session);
+    var redirected = await handleSsoRedirect();
+    if(!redirected){
+      location.hash='#account';
+    }
+  }catch(x){
+    e.textContent='Could not reach the server. Please verify backend is running.';
+  }
+});
+
+$('out').addEventListener('click',function(){session=null;sv(KS,null);location.hash='#login';});
+
+function renderProfDetails(p){
+  var name = p.name || 'User';
+  var rows=[['Name',name],['Mobile',p.mobile||'-'],['Village',p.village||'-'],['District',p.district||'-'],['Role',p.role||'-'],['Language',p.language||'-'],['Main crops',p.crops||'-'],['Email',p.email||'-']];
+  $('prof').innerHTML='<div style="border:0"><span class="av">'+esc((name[0]||'K').toUpperCase())+'</span></div>'+rows.map(function(r){return '<div><dt>'+r[0]+'</dt><dd>'+esc(r[1])+'</dd></div>'}).join('');
+}
+
+function acct(){
+  if(!session||!session.profile){location.hash='#login';return}
+  var p=session.profile||{};
+  var firstName=(p.name||'User').split(' ')[0];
+  $('hi').textContent='Hello, '+firstName;
+  var myApps=session.apps||[];
+  $('myapps').innerHTML=myApps.map(function(id){return real.filter(function(a){return a.id===id})[0]}).filter(Boolean).map(function(a){
+    return '<a class="app" href="javascript:void(0)" onclick="openAppWithSso(\''+a.id+'\', \''+(a.url||'#account')+'\')" style="--c:'+a.color+';--img:'+img(a)+'">'+lt(a)+'<span><b>'+a.name+'</b><small>'+a.tag+'</small></span><span class="open">Open</span></a>'
+  }).join('');
+  renderProfDetails(p);
+
+  // Sync latest shared profile from server
+  if(session.token){
+    fetch(CONFIG.API_BASE+'/me',{
+      headers:{'Authorization':'Bearer '+session.token}
+    }).then(function(r){return r.json()}).then(function(d){
+      if(d&&d.profile){
+        session.profile=d.profile;
+        if(d.apps) session.apps=d.apps;
+        sv(KS,session);
+        renderProfDetails(session.profile);
+      }
+    }).catch(function(){});
+  }
+}
+
+function route(){
+  var h=location.hash||'#register';
+  if(['#register','#login','#account'].indexOf(h)<0)h='#register';
+  if(h==='#account'&&!session)h='#login';
+  ['register','login','account'].forEach(function(n){$('v-'+n).hidden=('#'+n)!==h});
+  if(h==='#account')acct();
+  window.scrollTo(0,0);
+  // Auto-redirect if already logged in and SSO requested
+  if(session&&session.token&&window.location.search){
+    handleSsoRedirect();
+  }
+}
+addEventListener('hashchange',route);route();
+</script></body></html>

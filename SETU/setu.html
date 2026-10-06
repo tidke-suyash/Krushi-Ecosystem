@@ -1,0 +1,851 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>SETU — Smart E-Market for Trading &amp; Upliftment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600&display=swap">
+<style>
+:root{
+  color-scheme:light;
+  --ink:#161C1C; --paper:#F4F6F5; --card:#FFFFFF; --line:#E2E6E4;
+  --teal:#1B6B74; --teal-d:#124F57; --teal-soft:#E4F0F1;
+  --amber:#E2A63B; --amber-d:#B9822A; --muted:#6B756F; --muted-2:#A4ACA6; --danger:#C4462A;
+  box-sizing:border-box;
+}
+*,*::before,*::after{box-sizing:inherit;}
+html,body{height:100%;margin:0;}
+html{background:var(--paper);}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(--ink) !important;-webkit-font-smoothing:antialiased;}
+h1,h2,h3,.brand{font-family:'Manrope',system-ui,sans-serif;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+input,select,textarea,button{color:var(--ink);}
+a{color:inherit;text-decoration:none;}
+img{max-width:100%;display:block;}
+::selection{background:var(--teal-soft);}
+
+.view{display:none;}
+.view.active{display:block;}
+
+/* AUTH */
+#auth{min-height:100vh;align-items:center;justify-content:center;padding:24px;position:relative;overflow:hidden;background:#0e2a2c;}
+#auth.active{display:flex;}
+#auth::before{content:'';position:absolute;inset:0;background:url('setu_bg.jpeg') center/420px repeat;opacity:.5;transform:scale(1.05);}
+#auth::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,35,37,.55),rgba(10,35,37,.85));}
+.auth-card{position:relative;z-index:1;width:min(400px,100%);background:var(--card);border:1px solid var(--line);border-radius:20px;padding:32px 28px;box-shadow:0 24px 60px -20px rgba(0,0,0,.5);}
+.auth-logo{width:52px;display:block;margin:0 auto 8px;}
+.auth-brand{text-align:center;font-size:21px;font-weight:800;margin:0 0 2px;}
+.auth-tag{text-align:center;color:var(--muted);font-size:12px;margin:0 0 20px;}
+.field{margin-bottom:12px;}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:5px;}
+.field input,.field select,.field textarea{width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:11px;font-size:14px;background:#fbfcfb;outline:none;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--teal);}
+.field-hidden{display:none;}
+.btn-cta{width:100%;padding:12px;border-radius:12px;background:var(--teal);color:#fff;font-weight:700;font-size:14.5px;}
+.btn-cta:hover{background:var(--teal-d);}
+.auth-switch{text-align:center;font-size:13px;color:var(--muted);margin-top:14px;}
+.auth-switch b{color:var(--teal);cursor:pointer;}
+.auth-err{color:var(--danger);font-size:12.5px;font-weight:600;min-height:16px;margin:-4px 0 8px;}
+.auth-links{display:flex;justify-content:flex-end;margin:-6px 0 12px;}
+.auth-links a{font-size:12px;color:var(--teal);cursor:pointer;font-weight:600;}
+
+/* APP SHELL */
+#app{display:none;min-height:100vh;}
+#app.active{display:flex;}
+.rail{width:230px;flex-shrink:0;border-right:1px solid var(--line);padding:20px 12px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;}
+.rail-brand{display:flex;align-items:center;gap:9px;padding:0 8px 18px;}
+.rail-brand img{width:28px;}
+.rail-brand span{font-size:16px;font-weight:800;}
+.rail-nav{display:flex;flex-direction:column;gap:2px;flex:1;}
+.rail-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:11px;font-size:14px;font-weight:500;}
+.rail-item:hover{background:var(--teal-soft);}
+.rail-item.active{background:var(--teal);color:#fff;}
+.rail-sell{margin:12px 4px;padding:11px;border-radius:12px;background:var(--amber);color:#231705;font-weight:800;text-align:center;font-size:13.5px;}
+.rail-user{display:flex;align-items:center;gap:9px;padding:9px 8px;border-top:1px solid var(--line);margin-top:6px;}
+.rail-avatar{width:32px;height:32px;border-radius:9px;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;flex-shrink:0;}
+.rail-user .nm{font-size:12.5px;font-weight:700;}
+.rail-user .un{font-size:11px;color:var(--muted);}
+
+.center{flex:1;min-width:0;padding:20px 24px 90px;max-width:1080px;margin:0 auto;}
+@media(max-width:860px){.rail{display:none;}.center{padding:14px 14px 90px;}}
+
+.topbar-m{display:none;}
+@media(max-width:860px){
+  .topbar-m{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--paper);position:sticky;top:0;z-index:20;}
+  .topbar-m .tm-brand{display:flex;align-items:center;gap:7px;font-weight:800;font-size:15px;}
+  .topbar-m img{width:22px;}
+}
+
+/* Search bar */
+.searchbar{display:flex;gap:8px;margin-bottom:16px;}
+.searchbar input{flex:1;padding:12px 16px;border:1.5px solid var(--line);border-radius:13px;font-size:14px;background:var(--card);outline:none;}
+.searchbar input:focus{border-color:var(--teal);}
+.searchbar button{padding:0 18px;border-radius:13px;background:var(--teal);color:#fff;font-weight:700;font-size:13.5px;}
+
+.sec-title{font-size:15px;font-weight:800;margin:22px 0 12px;display:flex;align-items:center;justify-content:space-between;}
+.sec-title:first-child{margin-top:0;}
+.see-all{font-size:12px;color:var(--teal);font-weight:600;cursor:pointer;}
+
+.cat-strip{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;margin-bottom:6px;}
+.cat-chip{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 16px;border-radius:14px;background:var(--card);border:1px solid var(--line);font-size:11.5px;font-weight:600;min-width:78px;cursor:pointer;}
+.cat-chip .ic{font-size:22px;}
+.cat-chip:hover{border-color:var(--teal);}
+
+.banner{background:linear-gradient(120deg,var(--teal),var(--teal-d));border-radius:18px;padding:22px 24px;color:#fff;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;}
+.banner h3{margin:0 0 4px;font-size:18px;}
+.banner p{margin:0;font-size:12.5px;opacity:.85;}
+.banner .bic{font-size:34px;}
+
+/* Product grid/card */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;}
+.pcard{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;cursor:pointer;transition:box-shadow .15s;}
+.pcard:hover{box-shadow:0 12px 26px -16px rgba(20,30,28,.3);}
+.pthumb{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;font-size:36px;position:relative;}
+.pthumb .badge{position:absolute;top:8px;left:8px;background:rgba(22,28,28,.75);color:#fff;font-size:9.5px;font-weight:700;padding:3px 7px;border-radius:7px;}
+.pbody{padding:10px 11px 12px;}
+.ptitle{font-size:13px;font-weight:600;margin:0 0 4px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.pprice{font-size:15px;font-weight:800;color:var(--teal-d);margin:0 0 4px;}
+.pmeta{font-size:11px;color:var(--muted);display:flex;justify-content:space-between;}
+
+/* Search / filters */
+.search-layout{display:flex;gap:22px;align-items:flex-start;}
+.filters{width:220px;flex-shrink:0;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;}
+@media(max-width:780px){.search-layout{flex-direction:column;}.filters{width:100%;}}
+.filters h4{font-size:12.5px;margin:0 0 8px;color:var(--muted);}
+.filter-group{margin-bottom:16px;}
+.filter-group label.opt{display:flex;align-items:center;gap:7px;font-size:12.5px;padding:4px 0;color:#3a413d;}
+.filter-group input[type=range]{width:100%;}
+.price-row{display:flex;gap:6px;}
+.price-row input{width:100%;padding:8px 9px;border:1.5px solid var(--line);border-radius:9px;font-size:12.5px;}
+.results-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex:1;}
+.results-head select{padding:8px 10px;border:1.5px solid var(--line);border-radius:10px;font-size:12.5px;background:var(--card);}
+.empty{text-align:center;padding:50px 20px;color:var(--muted);}
+.empty .ic{font-size:36px;margin-bottom:10px;}
+
+/* Category page */
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;}
+.cat-tile{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 14px;text-align:center;cursor:pointer;}
+.cat-tile .ic{font-size:28px;margin-bottom:8px;}
+.cat-tile .nm{font-size:13px;font-weight:700;}
+.cat-tile .ct{font-size:11px;color:var(--muted);}
+.cat-tile:hover{border-color:var(--teal);}
+
+/* Product detail */
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:14px;cursor:pointer;}
+.pd-layout{display:flex;gap:26px;align-items:flex-start;}
+@media(max-width:780px){.pd-layout{flex-direction:column;}}
+.gallery-main{width:100%;aspect-ratio:4/3;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:60px;margin-bottom:10px;}
+.gallery-thumbs{display:flex;gap:8px;}
+.gallery-thumbs .th{width:56px;height:56px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;border:2px solid transparent;}
+.gallery-thumbs .th.active{border-color:var(--teal);}
+.pd-info{flex:1;min-width:0;}
+.pd-info h2{font-size:22px;margin:0 0 8px;}
+.pd-price{font-size:26px;font-weight:800;color:var(--teal-d);margin:0 0 10px;}
+.pd-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.pd-badge{background:var(--teal-soft);color:var(--teal-d);font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:8px;}
+.pd-desc{font-size:13.5px;line-height:1.6;color:#3a413d;margin-bottom:16px;}
+.spec-table{width:100%;border-collapse:collapse;margin-bottom:16px;}
+.spec-table td{padding:7px 0;font-size:13px;border-top:1px solid var(--line);}
+.spec-table td:first-child{color:var(--muted);width:40%;}
+.seller-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;gap:11px;align-items:center;margin-bottom:16px;}
+.seller-card .av{width:42px;height:42px;border-radius:11px;background:var(--teal-soft);color:var(--teal-d);display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;}
+.seller-card .nm{font-weight:700;font-size:13.5px;}
+.seller-card .rt{font-size:12px;color:var(--amber-d);}
+.seller-card .tp{font-size:11px;color:var(--muted);}
+.pd-actions{display:flex;gap:9px;flex-wrap:wrap;}
+.btn-teal{padding:11px 18px;border-radius:11px;background:var(--teal);color:#fff;font-weight:700;font-size:13.5px;}
+.btn-out{padding:11px 16px;border-radius:11px;border:1.5px solid var(--line);font-weight:600;font-size:13px;background:var(--card);}
+.btn-out.saved{border-color:var(--amber);color:var(--amber-d);}
+
+/* Listing form */
+.form-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;max-width:640px;}
+.img-upload{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.img-slot{width:64px;height:64px;border-radius:11px;border:1.5px dashed var(--line);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--muted-2);cursor:pointer;flex-shrink:0;}
+.img-slot.filled{border-style:solid;background:var(--teal-soft);color:var(--teal-d);font-size:22px;position:relative;}
+.img-slot .rm{position:absolute;top:-6px;right:-6px;width:18px;height:18px;background:var(--ink);color:#fff;border-radius:50%;font-size:10px;display:flex;align-items:center;justify-content:center;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:520px){.two-col{grid-template-columns:1fr;}}
+.form-actions{display:flex;gap:10px;margin-top:6px;flex-wrap:wrap;}
+.btn-ghost{padding:11px 16px;border-radius:11px;border:1.5px solid var(--line);font-weight:600;font-size:13px;}
+.preview-box{border:1.5px dashed var(--teal);border-radius:14px;padding:14px;margin-top:16px;background:var(--teal-soft);}
+
+/* Dashboard */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px;}
+.stat-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;}
+.stat-card b{font-size:20px;display:block;}
+.stat-card span{font-size:11.5px;color:var(--muted);}
+.stat-bar{height:6px;border-radius:4px;background:var(--line);margin-top:8px;overflow:hidden;}
+.stat-bar i{display:block;height:100%;background:var(--teal);}
+.tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
+.tab{padding:8px 14px;border-radius:10px;font-size:13px;font-weight:600;color:var(--muted);background:var(--card);border:1px solid var(--line);}
+.tab.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+.list-row{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px;}
+.list-row .th{width:52px;height:52px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.list-row .in{flex:1;min-width:0;}
+.list-row .tt{font-size:13.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.list-row .mt{font-size:11.5px;color:var(--muted);}
+.status-pill{font-size:10px;font-weight:700;padding:3px 8px;border-radius:7px;}
+.status-active{background:#E3F3E8;color:#1E7A3D;}
+.status-draft{background:#F0EFE9;color:#75705E;}
+.status-sold{background:var(--teal-soft);color:var(--teal-d);}
+.status-archived{background:#F1E3E3;color:#8A3A3A;}
+.row-acts{display:flex;gap:5px;}
+.row-acts button{width:28px;height:28px;border-radius:8px;background:#f1f0eb;font-size:12px;}
+.row-acts button:hover{background:var(--teal-soft);}
+
+/* Orders/notifications/profile */
+.order-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px;display:flex;gap:12px;align-items:center;}
+.order-card .th{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.notif-row{display:flex;gap:12px;padding:12px 4px;border-bottom:1px solid var(--line);}
+.notif-row .ic{width:32px;height:32px;border-radius:9px;background:var(--teal-soft);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.profile-head{text-align:center;padding:10px 0 18px;}
+.p-avatar{width:74px;height:74px;border-radius:50%;background:var(--teal);color:#fff;font-size:26px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;}
+.profile-head h2{margin:0 0 2px;font-size:18px;}
+.profile-head .un{color:var(--muted);font-size:12.5px;margin-bottom:8px;}
+.stat-row{display:flex;justify-content:center;gap:24px;margin:10px 0;}
+.stat-row .st b{display:block;font-size:16px;}
+.stat-row .st span{font-size:10.5px;color:var(--muted);}
+
+/* Bottom nav */
+.bnav{display:none;}
+@media(max-width:860px){
+  .bnav{display:flex;position:fixed;left:0;right:0;bottom:0;height:60px;background:var(--card);border-top:1px solid var(--line);z-index:30;padding-bottom:env(safe-area-inset-bottom,0px);}
+  .bn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--muted);font-size:9.5px;font-weight:600;}
+  .bn-item.active{color:var(--teal);}
+  .bn-item .ic{font-size:17px;}
+  .bn-fab{width:50px;height:50px;border-radius:50%;background:var(--amber);color:#231705;display:flex;align-items:center;justify-content:center;font-size:22px;margin-top:-20px;box-shadow:0 8px 16px -6px rgba(0,0,0,.35);border:3px solid var(--paper);}
+}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:12px;font-size:13px;font-weight:600;opacity:0;transition:.2s;z-index:80;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+@media(min-width:861px){.toast{bottom:24px;}}
+.hidden{display:none !important;}
+</style>
+</head>
+<body>
+
+<div id="auth" class="view active">
+  <div class="auth-card">
+    <img class="auth-logo" src="setu_logo.png" alt="SETU">
+    <p class="auth-brand">SETU</p>
+    <p class="auth-tag">Smart E-Market for Trading &amp; Upliftment</p>
+    <div class="auth-err" id="auth-err"></div>
+    <div class="field field-hidden" id="f-name"><label>Full name</label><input id="in-name" placeholder="Ramesh Yadav"></div>
+    <div class="field"><label>Email</label><input id="in-email" type="email" placeholder="you@setu.market"></div>
+    <div class="field" id="f-pass"><label>Password</label><input id="in-pass" type="password" placeholder="••••••••"></div>
+    <div class="auth-links" id="auth-forgot-link"><a id="to-forgot">Forgot password?</a></div>
+    <button class="btn-cta" id="auth-submit">Sign in</button>
+    <p class="auth-switch" id="auth-switch">New to SETU? <b id="auth-toggle">Create an account</b></p>
+  </div>
+</div>
+
+<div id="app">
+  <aside class="rail">
+    <div class="rail-brand"><img src="setu_logo.png"><span>SETU</span><button id="fs-btn-d" title="Fullscreen" style="margin-left:auto;font-size:14px;color:var(--muted)">⛶</button></div>
+    <div class="rail-nav" id="rail-nav"></div>
+    <button class="rail-sell" data-go="sell">+ Sell an item</button>
+    <div class="rail-user"><div class="rail-avatar" id="rail-av">U</div><div><div class="nm" id="rail-nm">User</div><div class="un" id="rail-un">@user</div></div></div>
+  </aside>
+  <div style="flex:1;min-width:0;">
+    <div class="topbar-m"><div class="tm-brand"><img src="setu_logo.png">SETU</div><div style="display:flex;gap:6px"><button id="fs-btn">⛶</button><button data-go="notifications">🔔</button></div></div>
+    <div class="center" id="center"></div>
+  </div>
+  <nav class="bnav" id="bnav"></nav>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ==========================================================================
+   KRUSHI ECOSYSTEMS CENTRAL CONFIGURATION
+   ========================================================================== */
+const KRUSHI_CONFIG = {
+  API_BASE: (window.location.origin && window.location.origin.startsWith('http')) ? window.location.origin : 'http://localhost:5000',
+  AUTH_URL: (window.location.origin && window.location.origin.startsWith('http')) ? window.location.origin + '/login/' : 'http://localhost:5000/login/',
+  AAHAR_URL: (window.location.origin && window.location.origin.startsWith('http')) ? window.location.origin + '/aahar/' : 'http://localhost:5000/aahar/',
+  SETU_URL: (window.location.origin && window.location.origin.startsWith('http')) ? window.location.origin + '/setu/' : 'http://localhost:5000/setu/',
+  VANI_URL: (window.location.origin && window.location.origin.startsWith('http')) ? window.location.origin + '/vani/' : 'http://localhost:5000/vani/',
+  APP_ID: 'SETU'
+};
+/* ---------- Mock data ---------- */
+const CATS=[
+  {id:'crops',nm:'Crops & Grains',ic:'🌾'},{id:'produce',nm:'Fruits & Vegetables',ic:'🍅'},{id:'livestock',nm:'Livestock',ic:'🐄'},
+  {id:'dairy',nm:'Dairy & Poultry',ic:'🥛'},{id:'tractors',nm:'Tractors & Vehicles',ic:'🚜'},{id:'machinery',nm:'Farm Machinery',ic:'⚙️'},
+  {id:'seeds',nm:'Seeds & Fertilizers',ic:'🌱'},{id:'irrigation',nm:'Irrigation & Tools',ic:'💧'},{id:'services',nm:'Agri Services',ic:'🛠️'},{id:'other',nm:'Other',ic:'📦'},
+];
+const catMap=Object.fromEntries(CATS.map(c=>[c.id,c]));
+const ICONS={crops:'🌾',produce:'🍅',livestock:'🐄',dairy:'🥛',tractors:'🚜',machinery:'⚙️',seeds:'🌱',irrigation:'💧',services:'🛠️',other:'📦'};
+
+let PRODUCTS=[
+ {id:'d1',title:'Mahindra 265 DI Tractor, well maintained',price:410000,cat:'tractors',cond:'Used',loc:'Nashik, MH',sellerType:'Individual',seller:'Ravindra Patil',rating:4.6,avail:'In stock',desc:'Second owner, recently serviced with new tyres. Ideal for small to mid-size farms. All documents clear.',specs:{'Hours used':'1,900','Fuel':'Diesel','HP':'42','Year':'2018'},views:2450,saves:183,enquiries:47,shares:92,status:'active',owner:'me',feat:true,time:5},
+ {id:'d2',title:'Basmati rice, 25kg sacks, premium grade',price:1850,cat:'crops',cond:'New',loc:'Karnal, HR',sellerType:'Business',seller:'Haryana Grain Traders',rating:4.8,avail:'In stock',desc:'Aged basmati rice, long grain, sourced directly from mill. Bulk orders welcome with delivery.',specs:{'Grain length':'Extra long','Bag size':'25kg','Grade':'Premium'},views:5120,saves:340,enquiries:88,shares:150,status:'active',owner:'other',feat:true,time:1},
+ {id:'d3',title:'Mahindra Jeeto mini truck for farm produce',price:412000,cat:'tractors',cond:'Used',loc:'Nagpur, MH',sellerType:'Individual',seller:'Aditya Deshmukh',rating:4.5,avail:'In stock',desc:'2020 model pickup, ideal for hauling produce to mandi. 14,000 km driven, always garaged.',specs:{'KM driven':'14,000','Year':'2020','Load capacity':'600kg'},views:3210,saves:210,enquiries:52,shares:60,status:'active',owner:'other',time:3},
+ {id:'d4',title:'Diesel water pump set, 5HP',price:18500,cat:'irrigation',cond:'New',loc:'Aurangabad, MH',sellerType:'Business',seller:'FarmTech Supplies',rating:4.4,avail:'In stock',desc:'Brand new, unused. Suitable for borewell and open well irrigation. 1 year manufacturer warranty.',specs:{'Power':'5HP','Warranty':'1 year','Type':'Diesel'},views:980,saves:64,enquiries:19,shares:12,status:'active',owner:'other',time:2},
+ {id:'d5',title:'10 Jersey cross dairy cows, healthy stock',price:520000,cat:'livestock',cond:'Used',loc:'Nashik, MH',sellerType:'Individual',seller:'Sneha Kulkarni',rating:4.2,avail:'In stock',desc:'Healthy, vaccinated dairy herd averaging 12L/day per cow. Health records available on request.',specs:{'Breed':'Jersey cross','Avg yield':'12L/day','Age range':'2-4 years'},views:640,saves:38,enquiries:9,shares:5,status:'active',owner:'other',time:6},
+ {id:'d6',title:'Organic wheat seeds, certified, 50kg',price:2600,cat:'seeds',cond:'New',loc:'Solapur, MH',sellerType:'Business',seller:'Weavers Seed Co.',rating:4.7,avail:'In stock',desc:'Certified organic wheat seed, high germination rate. Suitable for rabi season sowing.',specs:{'Germination rate':'92%','Bag size':'50kg','Season':'Rabi'},views:1220,saves:96,enquiries:14,shares:22,status:'active',owner:'other',time:1},
+ {id:'d7',title:'Fresh tomatoes, wholesale, daily supply',price:18,cat:'produce',cond:'New',loc:'Kolhapur, MH',sellerType:'Individual',seller:'Meera Joshi',rating:4.3,avail:'Limited',desc:'Farm-fresh tomatoes, daily harvest, wholesale rate per kg. Direct pickup or delivery to local mandi.',specs:{'Unit':'per kg','Harvest':'Daily'},views:410,saves:22,enquiries:6,shares:3,status:'active',owner:'other',time:9},
+ {id:'d8',title:'Borewell drilling service, per site',price:25000,cat:'services',cond:'New',loc:'Latur, MH',sellerType:'Business',seller:'Deep Bore Solutions',rating:4.5,avail:'In stock',desc:'Professional borewell drilling with equipment and crew. Site survey included in quote.',specs:{'Experience':'12 years','Team size':'6'},views:1580,saves:70,enquiries:41,shares:18,status:'active',owner:'other',time:4},
+ {id:'d9',title:'Free-range country chicken, 50 birds',price:22500,cat:'dairy',cond:'Used',loc:'Pune, MH',sellerType:'Individual',seller:'Vikram Rao',rating:4.1,avail:'In stock',desc:'Healthy free-range desi birds, vaccinated, ready for sale as breeding or table stock.',specs:{'Count':'50 birds','Age':'5-6 months'},views:890,saves:55,enquiries:15,shares:8,status:'active',owner:'other',time:7},
+ {id:'d10',title:'Rotavator, 6 feet, heavy duty',price:47000,cat:'machinery',cond:'Used',loc:'Jalgaon, MH',sellerType:'Individual',seller:'Prakash More',rating:4.4,avail:'In stock',desc:'Well maintained rotavator, blades replaced last season. Compatible with 35-50 HP tractors.',specs:{'Width':'6 ft','Blade type':'L-type'},views:1340,saves:88,enquiries:29,shares:11,status:'draft',owner:'me',time:2},
+ {id:'d11',title:'NPK fertilizer, 50kg bags, bulk order',price:1450,cat:'seeds',cond:'New',loc:'Nagpur, MH',sellerType:'Individual',seller:'Kunal Mehta',rating:4.0,avail:'In stock',desc:'Balanced NPK mix suitable for most kharif and rabi crops. Bulk discount for 20+ bags.',specs:{'Ratio':'19:19:19','Bag size':'50kg'},views:2100,saves:130,enquiries:34,shares:19,status:'active',owner:'other',time:2},
+ {id:'d12',title:'Bullock cart, wooden, restored',price:9500,cat:'other',cond:'Refurbished',loc:'Solapur, MH',sellerType:'Individual',seller:'Ganesh Shinde',rating:4.3,avail:'Out of stock',desc:'Traditional wooden cart, recently restored wheels and frame. Sold as-is.',specs:{'Wheel type':'Iron-rimmed wood'},views:520,saves:31,enquiries:8,shares:4,status:'sold',owner:'me',time:14},
+ {id:'d13',title:'Drip irrigation kit, 1 acre coverage',price:14200,cat:'irrigation',cond:'New',loc:'Pune, MH',sellerType:'Business',seller:'ComfortIrrigation Co.',rating:4.6,avail:'In stock',desc:'Complete drip kit with filters and emitters, covers up to 1 acre. Installation guide included.',specs:{'Coverage':'1 acre','Warranty':'1 year'},views:760,saves:48,enquiries:12,shares:9,status:'active',owner:'other',time:3},
+ {id:'d14',title:'Buffalo, high milk yield, vaccinated',price:68000,cat:'livestock',cond:'Used',loc:'Nashik, MH',sellerType:'Individual',seller:'Ramesh Yadav',rating:3.9,avail:'In stock',desc:'Murrah buffalo, 3rd lactation, currently yielding 9L/day. Fully vaccinated with health card.',specs:{'Breed':'Murrah','Yield':'9L/day','Lactation':'3rd'},views:390,saves:14,enquiries:5,shares:2,status:'archived',owner:'me',time:20},
+ {id:'d15',title:'Soil testing &amp; crop advisory service',price:1500,cat:'services',cond:'New',loc:'Kolhapur, MH',sellerType:'Individual',seller:'Anjali Pawar',rating:4.9,avail:'In stock',desc:'On-site soil sample testing with fertilizer and crop rotation advisory. Report within 48 hours.',specs:{'Turnaround':'48 hours','Coverage':'District-wide'},views:670,saves:41,enquiries:22,shares:6,status:'draft',owner:'me',time:1},
+ {id:'d16',title:'Solar fencing kit for farm perimeter',price:16800,cat:'other',cond:'New',loc:'Aurangabad, MH',sellerType:'Business',seller:'SunHeat Systems',rating:4.5,avail:'In stock',desc:'Solar-powered fencing to keep wild animals off crops. Covers up to 2 acres, includes energizer unit.',specs:{'Coverage':'2 acres','Warranty':'5 years'},views:1050,saves:62,enquiries:17,shares:10,status:'active',owner:'other',time:5},
+];
+let saved=new Set(['d2','d9']);
+
+/* ---------- Auth & storage ---------- */
+const $ = id => document.getElementById(id);
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e) { return d; } },
+  set(k, v) { try { if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} }
+};
+
+let session = store.get('setu_session', null);
+let authMode = 'login'; // login | signup | forgot
+
+function setAuthMode(m) {
+  authMode = m;
+  if (m === 'signup') {
+    // Redirect to Central Krushi Login for registration
+    const returnUrl = window.location.href.split('?')[0];
+    window.location.href = KRUSHI_CONFIG.AUTH_URL + '?app=SETU&redirect_uri=' + encodeURIComponent(returnUrl) + '#register';
+    return;
+  }
+  $('f-name').classList.toggle('field-hidden', true);
+  $('f-pass').classList.toggle('field-hidden', m === 'forgot');
+  $('auth-forgot-link').classList.toggle('hidden', m !== 'login');
+  $('auth-submit').textContent = m === 'forgot' ? 'Send reset link' : 'Sign in';
+  $('auth-switch').innerHTML = m === 'forgot'
+    ? 'Remembered it? <b id="auth-toggle">Back to sign in</b>'
+    : 'New to SETU? <b id="auth-toggle">Create an account</b>';
+  $('auth-err').textContent = '';
+  $('auth-toggle').onclick = () => setAuthMode('signup');
+  document.getElementById('to-forgot') && (document.getElementById('to-forgot').onclick = () => setAuthMode('forgot'));
+}
+setAuthMode('login');
+
+$('auth-submit').onclick = async () => {
+  const id = $('in-email').value.trim();
+  const pass = $('in-pass').value;
+  if (!id) { $('auth-err').textContent = 'Enter your email or mobile.'; return; }
+  if (authMode === 'forgot') { toast('Reset link sent to ' + id); setAuthMode('login'); return; }
+  if (!pass) { $('auth-err').textContent = 'Enter your password.'; return; }
+
+  try {
+    const res = await fetch(KRUSHI_CONFIG.API_BASE + '/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, password: pass })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      $('auth-err').textContent = data.message || 'Incorrect credentials.';
+      return;
+    }
+    session = {
+      token: data.accessToken,
+      profile: data.profile,
+      email: data.profile.email || data.profile.mobile
+    };
+    store.set('setu_session', session);
+    boot();
+  } catch (err) {
+    $('auth-err').textContent = 'Could not reach Krushi server.';
+  }
+};
+
+async function handleSsoCallback() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get('code');
+  if (code) {
+    try {
+      const res = await fetch(KRUSHI_CONFIG.API_BASE + '/auth/exchange', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, app: 'SETU' })
+      });
+      const data = await res.json();
+      if (res.ok && data.accessToken) {
+        session = {
+          token: data.accessToken,
+          profile: data.profile,
+          email: data.profile.email || data.profile.mobile
+        };
+        store.set('setu_session', session);
+        window.history.replaceState({}, document.title, window.location.pathname);
+        return true;
+      }
+    } catch (e) {
+      console.warn('SETU SSO exchange error:', e);
+    }
+  }
+  return false;
+}
+
+/* ---------- Nav / state ---------- */
+const NAV=[{id:'home',ic:'🏠',lb:'Home'},{id:'categories',ic:'🗂️',lb:'Categories'},{id:'search',ic:'🔎',lb:'Search'},
+  {id:'sell',ic:'➕',lb:'Sell'},{id:'orders',ic:'📦',lb:'Orders'},{id:'notifications',ic:'🔔',lb:'Alerts'},{id:'profile',ic:'👤',lb:'Profile'}];
+const BNAV=['home','categories','sell','orders','profile'];
+let state={view:'home',catId:null,prodId:null,dashTab:'active',ordTab:'active',galleryIdx:0,draftImgs:2};
+function go(v,extra){state.view=v;Object.assign(state,extra||{});render();window.scrollTo(0,0);}
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(g.dataset.go, g.dataset.cat?{catId:g.dataset.cat}:g.dataset.prod?{prodId:g.dataset.prod}:null);});
+
+async function boot() {
+  $('auth').classList.remove('active');
+  $('app').classList.add('active');
+
+  // Sync latest shared profile from server
+  if (session && session.token) {
+    try {
+      const pRes = await fetch(KRUSHI_CONFIG.API_BASE + '/me', {
+        headers: { 'Authorization': 'Bearer ' + session.token }
+      });
+      const pData = await pRes.json();
+      if (pRes.ok && pData.profile) {
+        session.profile = pData.profile;
+        store.set('setu_session', session);
+      }
+    } catch(e) {}
+  }
+
+  const p = (session && session.profile) || {};
+  const name = p.name || 'Krushi User';
+  const role = p.role || 'Farmer';
+  const loc = p.village ? (p.village + ', ' + (p.district || '')) : 'Maharashtra, India';
+
+  $('rail-av').textContent = (name[0] || 'K').toUpperCase();
+  $('rail-nm').textContent = name;
+  $('rail-un').textContent = '@' + name.split(' ')[0].toLowerCase() + ' · ' + role;
+
+  renderNavs();
+  render();
+
+  // Load real products and saved items from backend
+  await loadServerProducts();
+  await loadServerSaved();
+}
+
+async function loadServerProducts() {
+  try {
+    const res = await fetch(KRUSHI_CONFIG.API_BASE + '/setu/products');
+    const data = await res.json();
+    if (res.ok && Array.isArray(data) && data.length) {
+      PRODUCTS = data.map(p => ({
+        ...p,
+        desc: p.description || p.desc,
+        cat: p.category || p.cat,
+        cond: p.condition || p.cond,
+        loc: p.location || p.loc,
+        avail: p.availability || p.avail,
+        seller: p.seller_name || p.seller || 'Krushi Seller',
+        sellerType: p.seller_type || p.sellerType || 'Individual',
+        owner: (session && session.profile && p.seller_user_id === session.profile.user_id) ? 'me' : (p.owner || 'other')
+      }));
+      render();
+    }
+  } catch(e) {}
+}
+
+async function loadServerSaved() {
+  if (session && session.token) {
+    try {
+      const res = await fetch(KRUSHI_CONFIG.API_BASE + '/setu/saved', {
+        headers: { 'Authorization': 'Bearer ' + session.token }
+      });
+      const data = await res.json();
+      if (res.ok && Array.isArray(data)) {
+        saved = new Set(data);
+        render();
+      }
+    } catch(e) {}
+  }
+}
+
+// Global toggle save hooked to backend
+window.toggleProductSave = async function(id) {
+  if (!session || !session.token) {
+    toast('Sign in with Krushi account to save products');
+    return;
+  }
+  try {
+    const res = await fetch(KRUSHI_CONFIG.API_BASE + '/setu/saved/' + id, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + session.token }
+    });
+    const data = await res.json();
+    if (res.ok) {
+      if (data.saved) saved.add(id);
+      else saved.delete(id);
+      render();
+      toast(data.saved ? 'Product saved' : 'Product removed from saved');
+    }
+  } catch(e) {
+    if (saved.has(id)) saved.delete(id); else saved.add(id);
+    render();
+  }
+};
+
+function renderNavs(){
+  $('rail-nav').innerHTML=NAV.map(n=>`<div class="rail-item${state.view===n.id?' active':''}" data-go="${n.id}"><span>${n.ic}</span>${n.lb}</div>`).join('');
+  $('bnav').innerHTML=BNAV.map(id=>{
+    const n=NAV.find(x=>x.id===id);
+    return id==='sell' ? `<div class="bn-item"><button class="bn-fab" data-go="sell">+</button></div>`
+      : `<div class="bn-item${state.view===id?' active':''}" data-go="${id}"><span class="ic">${n.ic}</span>${n.lb}</div>`;
+  }).join('');
+}
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1700);}
+function money(n){return '₹'+n.toLocaleString('en-IN');}
+function thumbBg(cat){return `linear-gradient(135deg,var(--teal-soft),#fff)`;}
+
+/* ---------- Product card ---------- */
+function pCard(p){
+  return `<div class="pcard" data-go="product-detail" data-prod="${p.id}">
+    <div class="pthumb" style="background:${thumbBg(p.cat)}">${ICONS[p.cat]}${p.feat?'<span class="badge">Featured</span>':''}</div>
+    <div class="pbody"><p class="ptitle">${p.title}</p><p class="pprice">${money(p.price)}</p>
+    <div class="pmeta"><span>${p.loc.split(',')[0]}</span><span>${p.cond}</span></div></div>
+  </div>`;
+}
+function grid(list){ return list.length? `<div class="grid">${list.map(pCard).join('')}</div>` : `<div class="empty"><div class="ic">🔍</div>No items to show yet.</div>`; }
+
+/* ---------- Views ---------- */
+function render(){
+  renderNavs();
+  const c=$('center'); const v=state.view;
+  if(v==='home')return renderHome(c);
+  if(v==='categories')return renderCategories(c);
+  if(v==='category-detail')return renderCategoryDetail(c);
+  if(v==='search')return renderSearch(c);
+  if(v==='product-detail')return renderProductDetail(c);
+  if(v==='sell')return renderSell(c);
+  if(v==='dashboard')return renderDashboard(c);
+  if(v==='orders')return renderOrders(c);
+  if(v==='notifications')return renderNotifications(c);
+  if(v==='profile')return renderProfile(c);
+}
+function searchBarHtml(){return `<div class="searchbar"><input id="hs-input" placeholder="Search for tractors, seeds, livestock, produce..." value="${state.q||''}"><button id="hs-btn">Search</button></div>`;}
+document.addEventListener('keydown',e=>{ if(e.target && e.target.id==='hs-input' && e.key==='Enter') doHomeSearch(); });
+function wireSearchBar(){ $('hs-btn') && ($('hs-btn').onclick=doHomeSearch); }
+function doHomeSearch(){ const q=$('hs-input').value.trim(); go('search',{q}); }
+
+function renderHome(c){
+  const featured=PRODUCTS.filter(p=>p.feat);
+  const trending=PRODUCTS.slice().sort((a,b)=>b.views-a.views).slice(0,6);
+  const recommended=PRODUCTS.filter(p=>p.status==='active').slice(2,8);
+  const recent=PRODUCTS.filter(p=>p.status==='active').slice().sort((a,b)=>(a.time||0)-(b.time||0)).slice(0,6);
+  c.innerHTML=`${searchBarHtml()}
+  <div class="cat-strip">${CATS.map(cat=>`<div class="cat-chip" data-go="category-detail" data-cat="${cat.id}"><span class="ic">${cat.ic}</span>${cat.nm}</div>`).join('')}</div>
+  <div class="banner" style="margin-top:16px"><div><h3>List your produce or equipment today</h3><p>Reach buyers, traders and fellow farmers near you — it takes under 2 minutes.</p></div><span class="bic">🚜</span></div>
+  <p class="sec-title">Featured products</p>${grid(featured)}
+  <p class="sec-title">Trending now</p>${grid(trending)}
+  <p class="sec-title">Recommended for you</p>${grid(recommended)}
+  <p class="sec-title">Recently added</p>${grid(recent)}`;
+  wireSearchBar();
+}
+function renderCategories(c){
+  c.innerHTML=`<p class="sec-title">All categories</p><div class="cat-grid">${CATS.map(cat=>`
+    <div class="cat-tile" data-go="category-detail" data-cat="${cat.id}"><div class="ic">${cat.ic}</div><div class="nm">${cat.nm}</div>
+    <div class="ct">${PRODUCTS.filter(p=>p.cat===cat.id&&p.status==='active').length} listings</div></div>`).join('')}</div>`;
+}
+function renderCategoryDetail(c){
+  const cat=catMap[state.catId]||CATS[0];
+  const items=PRODUCTS.filter(p=>p.cat===cat.id&&p.status==='active');
+  c.innerHTML=`<a class="back-link" data-go="categories">← All categories</a>
+  <p class="sec-title">${cat.ic} ${cat.nm} <span class="see-all" data-go="search" data-cat="${cat.id}">Search within</span></p>${grid(items)}`;
+}
+function renderSearch(c){
+  const q=(state.q||'').toLowerCase();
+  const f=state.filters||{cat:'',cond:'',stype:'',avail:'',minP:'',maxP:'',loc:''};
+  const sort=state.sort||'relevance';
+  let list=PRODUCTS.filter(p=>p.status==='active');
+  if(q) list=list.filter(p=>p.title.toLowerCase().includes(q)||p.desc.toLowerCase().includes(q));
+  if(f.cat) list=list.filter(p=>p.cat===f.cat);
+  if(f.cond) list=list.filter(p=>p.cond===f.cond);
+  if(f.stype) list=list.filter(p=>p.sellerType===f.stype);
+  if(f.avail) list=list.filter(p=>p.avail===f.avail);
+  if(f.minP) list=list.filter(p=>p.price>=+f.minP);
+  if(f.maxP) list=list.filter(p=>p.price<=+f.maxP);
+  if(sort==='newest') list=list.slice().sort((a,b)=>(a.time||0)-(b.time||0));
+  if(sort==='low') list=list.slice().sort((a,b)=>(a.price||0)-(b.price||0));
+  if(sort==='high') list=list.slice().sort((a,b)=>(b.price||0)-(a.price||0));
+  c.innerHTML=`${searchBarHtml()}
+  <div class="search-layout">
+    <div class="filters">
+      <h4>CATEGORY</h4><select id="f-cat" class="fctl"><option value="">All</option>${CATS.map(x=>`<option value="${x.id}" ${f.cat===x.id?'selected':''}>${x.nm}</option>`).join('')}</select>
+      <div class="filter-group" style="margin-top:14px"><h4>PRICE RANGE</h4><div class="price-row"><input id="f-min" placeholder="Min" value="${f.minP}"><input id="f-max" placeholder="Max" value="${f.maxP}"></div></div>
+      <div class="filter-group"><h4>CONDITION</h4><select id="f-cond" class="fctl"><option value="">Any</option><option ${f.cond==='New'?'selected':''}>New</option><option ${f.cond==='Used'?'selected':''}>Used</option><option ${f.cond==='Refurbished'?'selected':''}>Refurbished</option></select></div>
+      <div class="filter-group"><h4>SELLER TYPE</h4><select id="f-stype" class="fctl"><option value="">Any</option><option ${f.stype==='Individual'?'selected':''}>Individual</option><option ${f.stype==='Business'?'selected':''}>Business</option></select></div>
+      <div class="filter-group"><h4>AVAILABILITY</h4><select id="f-avail" class="fctl"><option value="">Any</option><option ${f.avail==='In stock'?'selected':''}>In stock</option><option ${f.avail==='Limited'?'selected':''}>Limited</option></select></div>
+      <button class="btn-ghost" style="width:100%" id="f-clear">Clear filters</button>
+    </div>
+    <div style="flex:1;min-width:0">
+      <div class="results-head"><span style="font-size:12.5px;color:var(--muted)">${list.length} results</span>
+        <select id="f-sort"><option value="relevance" ${sort==='relevance'?'selected':''}>Relevance</option><option value="newest" ${sort==='newest'?'selected':''}>Newest</option><option value="low" ${sort==='low'?'selected':''}>Price: Low to High</option><option value="high" ${sort==='high'?'selected':''}>Price: High to Low</option></select>
+      </div>${grid(list)}
+    </div>
+  </div>`;
+  wireSearchBar();
+  document.querySelectorAll('.fctl,#f-min,#f-max').forEach(el=>el.onchange=applyFilters);
+  $('f-sort').onchange=e=>{state.sort=e.target.value;render();};
+  $('f-clear').onclick=()=>{state.filters={};state.q='';render();};
+}
+function applyFilters(){
+  state.filters={cat:$('f-cat').value,cond:$('f-cond').value,stype:$('f-stype').value,avail:$('f-avail').value,minP:$('f-min').value,maxP:$('f-max').value};
+  render();
+}
+
+function renderProductDetail(c){
+  const p=PRODUCTS.find(x=>x.id===state.prodId); if(!p)return go('home');
+  const imgs=[0,1,2];
+  c.innerHTML=`<a class="back-link" data-go="home">← Back</a>
+  <div class="pd-layout">
+    <div style="width:min(420px,100%)">
+      <div class="gallery-main" id="gal-main" style="background:${thumbBg(p.cat)}">${ICONS[p.cat]}</div>
+      <div class="gallery-thumbs">${imgs.map((n,i)=>`<div class="th ${i===state.galleryIdx?'active':''}" style="background:var(--teal-soft)" data-th="${i}">${ICONS[p.cat]}</div>`).join('')}</div>
+    </div>
+    <div class="pd-info">
+      <h2>${p.title}</h2><p class="pd-price">${money(p.price)}</p>
+      <div class="pd-badges"><span class="pd-badge">${p.cond}</span><span class="pd-badge">${p.loc}</span><span class="pd-badge">${p.avail}</span><span class="pd-badge">${catMap[p.cat].nm}</span></div>
+      <p class="pd-desc">${p.desc}</p>
+      <table class="spec-table">${Object.entries(p.specs).map(([k,v])=>`<tr><td>${k}</td><td>${v}</td></tr>`).join('')}</table>
+      <div class="seller-card"><div class="av">${p.seller[0]}</div><div><div class="nm">${p.seller}</div><div class="rt">★ ${p.rating} · ${p.sellerType}</div><div class="tp">${p.loc}</div></div></div>
+      <div class="pd-actions">
+        <button class="btn-teal" id="pd-contact">Contact Seller</button>
+        <button class="btn-out ${saved.has(p.id)?'saved':''}" id="pd-save">${saved.has(p.id)?'★ Saved':'☆ Save'}</button>
+        <button class="btn-out" id="pd-share">↗ Share</button>
+        <button class="btn-out" id="pd-report">⚑ Report</button>
+      </div>
+    </div>
+  </div>`;
+  document.querySelectorAll('[data-th]').forEach(t=>t.onclick=()=>{state.galleryIdx=+t.dataset.th;render();});
+  $('pd-contact').onclick=()=>toast('Message sent to '+p.seller);
+  $('pd-save').onclick=()=>{saved.has(p.id)?saved.delete(p.id):saved.add(p.id);render();};
+  $('pd-share').onclick=()=>toast('Link copied to clipboard');
+  $('pd-report').onclick=()=>toast('Listing reported — our team will review it');
+}
+
+function renderSell(c){
+  const draft=state.sellDraft||{imgs:2,cat:'electronics',cond:'New'};
+  c.innerHTML=`<p class="sec-title">Create a listing</p>
+  <div class="form-card">
+    <div class="field"><label>Product images</label>
+      <div class="img-upload" id="img-upload">
+        ${Array.from({length:draft.imgs}).map((_,i)=>`<div class="img-slot filled">🖼️<span class="rm" data-rmimg="${i}">✕</span></div>`).join('')}
+        <div class="img-slot" id="add-img">+</div>
+      </div>
+    </div>
+    <div class="field"><label>Product name</label><input id="s-name" placeholder="e.g. Mahindra 265 DI Tractor"></div>
+    <div class="two-col">
+      <div class="field"><label>Category</label><select id="s-cat">${CATS.map(x=>`<option value="${x.id}">${x.nm}</option>`).join('')}</select></div>
+      <div class="field"><label>Price (₹)</label><input id="s-price" type="number" placeholder="0"></div>
+    </div>
+    <div class="field"><label>Description</label><textarea id="s-desc" rows="4" placeholder="Describe condition, usage history, and any details buyers should know"></textarea></div>
+    <div class="two-col">
+      <div class="field"><label>Condition</label><select id="s-cond"><option>New</option><option>Used</option><option>Refurbished</option></select></div>
+      <div class="field"><label>Quantity</label><input id="s-qty" type="number" value="1" min="1"></div>
+    </div>
+    <div class="two-col">
+      <div class="field"><label>Location</label><input id="s-loc" placeholder="City, State"></div>
+      <div class="field"><label>Contact number</label><input id="s-contact" placeholder="+91 90000 00000"></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-ghost" id="s-draft">Save as draft</button>
+      <button class="btn-out" id="s-preview">Preview listing</button>
+      <button class="btn-teal" id="s-publish">Publish listing</button>
+    </div>
+    <div id="s-previewbox"></div>
+  </div>`;
+  $('add-img').onclick=()=>{ state.sellDraft=collectDraft(); state.sellDraft.imgs=Math.min(state.sellDraft.imgs+1,6); render(); };
+  document.querySelectorAll('[data-rmimg]').forEach(b=>b.onclick=()=>{ state.sellDraft=collectDraft(); state.sellDraft.imgs=Math.max(state.sellDraft.imgs-1,0); render(); });
+  $('s-draft').onclick=()=>{
+    const d=collectDraft(); if(!d.name){toast('Add a product name first');return;}
+    PRODUCTS.unshift({id:'p'+Date.now(),title:d.name,price:+d.price||0,cat:d.cat,cond:d.cond,loc:d.loc||'—',sellerType:'Individual',seller:users[session.email].name,rating:4.5,avail:'In stock',desc:d.desc,specs:{Quantity:d.qty},views:0,saves:0,enquiries:0,shares:0,status:'draft',owner:'me',time:0});
+    toast('Draft saved'); go('dashboard',{dashTab:'draft'});
+  };
+  $('s-preview').onclick=()=>{
+    const d=collectDraft();
+    $('s-previewbox').innerHTML=`<div class="preview-box"><strong>${d.name||'Untitled listing'}</strong><div class="pprice" style="margin-top:6px">${money(+d.price||0)}</div><p style="font-size:12.5px;color:var(--muted);margin:6px 0 0">${d.desc||'No description yet.'}</p></div>`;
+  };
+  $('s-publish').onclick = async () => {
+    const d = collectDraft();
+    if (!d.name || !d.price) { toast('Add a name and price to publish'); return; }
+    
+    // Call backend API
+    if (session && session.token) {
+      try {
+        const res = await fetch(KRUSHI_CONFIG.API_BASE + '/setu/products', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + session.token
+          },
+          body: JSON.stringify({
+            title: d.name,
+            desc: d.desc,
+            price: +d.price,
+            cat: d.cat,
+            loc: d.loc,
+            cond: d.cond,
+            specs: { Quantity: d.qty }
+          })
+        });
+        const created = await res.json();
+        if (res.ok && created) {
+          PRODUCTS.unshift({
+            ...created,
+            desc: created.description || d.desc,
+            cat: created.category || d.cat,
+            cond: created.condition || d.cond,
+            loc: created.location || d.loc,
+            seller: (session.profile && session.profile.name) || 'Krushi Seller',
+            sellerType: (session.profile && session.profile.role) || 'Individual',
+            owner: 'me'
+          });
+          toast('Listing published to Krushi Marketplace');
+          go('dashboard', { dashTab: 'active' });
+          return;
+        }
+      } catch (e) {
+        console.warn('Publish API error, saving locally:', e);
+      }
+    }
+    
+    PRODUCTS.unshift({
+      id: 'p' + Date.now(),
+      title: d.name,
+      price: +d.price,
+      cat: d.cat,
+      cond: d.cond,
+      loc: d.loc || '—',
+      sellerType: 'Individual',
+      seller: (session && session.profile && session.profile.name) || 'Krushi Farmer',
+      rating: 4.5,
+      avail: 'In stock',
+      desc: d.desc,
+      specs: { Quantity: d.qty },
+      views: 0,
+      saves: 0,
+      enquiries: 0,
+      shares: 0,
+      status: 'active',
+      owner: 'me',
+      time: 0
+    });
+    toast('Listing published');
+    go('dashboard', { dashTab: 'active' });
+  };
+}
+function collectDraft(){return {imgs:document.querySelectorAll('.img-slot.filled').length,name:$('s-name').value.trim(),cat:$('s-cat').value,price:$('s-price').value,desc:$('s-desc').value.trim(),cond:$('s-cond').value,qty:$('s-qty').value,loc:$('s-loc').value.trim(),contact:$('s-contact').value.trim()};}
+
+function renderDashboard(c){
+  const mine=PRODUCTS.filter(p=>p.owner==='me');
+  const tab=state.dashTab||'active';
+  const shown=mine.filter(p=>p.status===tab);
+  const tot={views:mine.reduce((a,p)=>a+p.views,0),saves:mine.reduce((a,p)=>a+p.saves,0),enq:mine.reduce((a,p)=>a+p.enquiries,0),sh:mine.reduce((a,p)=>a+p.shares,0)};
+  c.innerHTML=`<p class="sec-title">Seller dashboard</p>
+  <div class="stat-grid">
+    <div class="stat-card"><b>${mine.length}</b><span>Total listings</span></div>
+    <div class="stat-card"><b>${tot.views.toLocaleString()}</b><span>Views</span><div class="stat-bar"><i style="width:100%"></i></div></div>
+    <div class="stat-card"><b>${tot.enq}</b><span>Enquiries</span><div class="stat-bar"><i style="width:65%"></i></div></div>
+    <div class="stat-card"><b>${tot.saves}</b><span>Saves</span><div class="stat-bar"><i style="width:45%"></i></div></div>
+    <div class="stat-card"><b>${tot.sh}</b><span>Shares</span><div class="stat-bar"><i style="width:30%"></i></div></div>
+  </div>
+  <div class="tabs">${['active','draft','sold','archived'].map(t=>`<button class="tab ${tab===t?'active':''}" data-dtab="${t}">${t[0].toUpperCase()+t.slice(1)} (${mine.filter(p=>p.status===t).length})</button>`).join('')}</div>
+  ${shown.length? shown.map(p=>`<div class="list-row"><div class="th" style="background:${thumbBg(p.cat)}">${ICONS[p.cat]}</div>
+    <div class="in"><div class="tt">${p.title}</div><div class="mt">${money(p.price)} · <span class="status-pill status-${p.status}">${p.status}</span> · 👁 ${p.views}</div></div>
+    <div class="row-acts"><button data-go="product-detail" data-prod="${p.id}" title="View">👁</button><button data-editp="${p.id}" title="Edit">✎</button><button data-archp="${p.id}" title="Archive">🗄</button><button data-delp="${p.id}" title="Delete">🗑</button></div>
+  </div>`).join('') : `<div class="empty"><div class="ic">📭</div>No ${tab} listings.</div>`}`;
+  document.querySelectorAll('[data-dtab]').forEach(b=>b.onclick=()=>{state.dashTab=b.dataset.dtab;render();});
+  document.querySelectorAll('[data-editp]').forEach(b=>b.onclick=()=>toast('Edit form would open here'));
+  document.querySelectorAll('[data-archp]').forEach(b=>b.onclick=()=>{const p=PRODUCTS.find(x=>x.id===b.dataset.archp);p.status='archived';toast('Listing archived');render();});
+  document.querySelectorAll('[data-delp]').forEach(b=>b.onclick=()=>{PRODUCTS=PRODUCTS.filter(x=>x.id!==b.dataset.delp);toast('Listing deleted');render();});
+}
+
+function renderOrders(c){
+  const tab=state.ordTab||'active';
+  const ORDERS=[
+    {id:'o1',title:'Diesel water pump set, 5HP',price:18500,status:'active',with:'FarmTech Supplies',date:'24 Sep 2026',ic:'⚙️'},
+    {id:'o2',title:'iPhone 13, 128GB, Midnight',price:38500,status:'completed',with:'ReTech Traders',date:'02 Sep 2026',ic:'💻'},
+    {id:'o3',title:'NCERT + reference book set',price:850,status:'completed',with:'Meera Joshi',date:'14 Aug 2026',ic:'📚'},
+    {id:'o4',title:'Old scooter — spares/scrap',price:4500,status:'cancelled',with:'Ramesh Yadav',date:'02 Aug 2026',ic:'🚗'},
+  ];
+  const shown=ORDERS.filter(o=>o.status===tab);
+  c.innerHTML=`<p class="sec-title">Orders</p>
+  <div class="tabs">${['active','completed','cancelled'].map(t=>`<button class="tab ${tab===t?'active':''}" data-otab="${t}">${t[0].toUpperCase()+t.slice(1)}</button>`).join('')}</div>
+  ${shown.length? shown.map(o=>`<div class="order-card"><div class="th" style="background:var(--teal-soft)">${o.ic}</div>
+    <div style="flex:1;min-width:0"><div class="tt" style="font-weight:700;font-size:13.5px">${o.title}</div><div class="mt" style="font-size:11.5px;color:var(--muted)">${o.with} · ${o.date}</div></div>
+    <div style="text-align:right"><div style="font-weight:800">${money(o.price)}</div><span class="status-pill status-${o.status==='active'?'active':o.status==='completed'?'sold':'archived'}">${o.status}</span></div></div>`).join('')
+    : `<div class="empty"><div class="ic">📦</div>No ${tab} orders.</div>`}`;
+  document.querySelectorAll('[data-otab]').forEach(b=>b.onclick=()=>{state.ordTab=b.dataset.otab;render();});
+}
+function renderNotifications(c){
+  const items=[
+    {ic:'💬','t':'ReTech Traders replied to your enquiry on iPhone 13.','w':'1h ago'},
+    {ic:'👁','t':'Your listing "Mahindra 265 DI Tractor" reached 2,450 views.','w':'4h ago'},
+    {ic:'★','t':'Someone saved your listing "Rotavator, 6 feet".','w':'1d ago'},
+    {ic:'📦','t':'Your order for "Diesel water pump set" is on the way.','w':'2d ago'},
+  ];
+  c.innerHTML=`<p class="sec-title">Notifications</p><div style="background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px 14px">${items.map(n=>`<div class="notif-row"><div class="ic">${n.ic}</div><div><div style="font-size:13px">${n.t}</div><div style="font-size:11px;color:var(--muted-2);margin-top:2px">${n.w}</div></div></div>`).join('')}</div>`;
+}
+function renderProfile(c) {
+  const p = (session && session.profile) || {};
+  const name = p.name || 'Krushi Seller';
+  const role = p.role || 'Farmer';
+  const loc = p.village ? (p.village + ', ' + (p.district || '')) : 'Maharashtra, India';
+  const crops = p.crops ? (' · ' + p.crops) : '';
+  const mine = PRODUCTS.filter(x => x.owner === 'me');
+
+  c.innerHTML = `<div class="profile-head">
+    <div class="p-avatar">${(name[0] || 'K').toUpperCase()}</div>
+    <h2>${name}</h2>
+    <div class="un">${role} · ${loc}${crops}</div>
+    <div class="stat-row">
+      <div class="st"><b>${mine.length}</b><span>Listings</span></div>
+      <div class="st"><b>${saved.size}</b><span>Saved</span></div>
+      <div class="st"><b>★ 4.8</b><span>Rating</span></div>
+      <div class="st"><b>${role}</b><span>Seller type</span></div>
+    </div>
+    <button class="btn-ghost" id="dash-link">Seller dashboard</button>
+    <button class="btn-ghost" id="btn-logout">Log out</button>
+  </div>
+  <p class="sec-title">Your listings</p>${grid(mine.filter(x => x.status === 'active'))}
+  <p class="sec-title">Saved products</p>${grid(PRODUCTS.filter(x => saved.has(x.id)))}`;
+
+  $('dash-link').onclick = () => go('dashboard');
+  $('btn-logout').onclick = async () => {
+    if (session && session.token) {
+      try {
+        await fetch(KRUSHI_CONFIG.API_BASE + '/auth/logout', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + session.token }
+        });
+      } catch(e) {}
+    }
+    session = null;
+    store.set('setu_session', null);
+    $('app').classList.remove('active');
+    $('auth').classList.add('active');
+    toast('Logged out');
+  };
+}
+
+/* fullscreen — disabled: requestFullscreen hides browser chrome & taskbar (looks like browser crash) */
+function toggleFS(){ toast('Fullscreen mode is disabled for stability.'); }
+$('fs-btn') && ($('fs-btn').onclick=toggleFS);
+$('fs-btn-d') && ($('fs-btn-d').onclick=toggleFS);
+
+(async function init() {
+  const ssoExchanged = await handleSsoCallback();
+  if (ssoExchanged || (session && session.token)) {
+    boot();
+  } else {
+    $('app').classList.remove('active');
+    $('auth').classList.add('active');
+  }
+})();
+</script>
+</body>
+</html>

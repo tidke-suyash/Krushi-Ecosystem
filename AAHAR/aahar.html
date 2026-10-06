@@ -1,0 +1,784 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>AAHAR</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌱</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+:root{
+  color-scheme:light;
+  --ink:#14150F; --paper:#F5F1E6; --card:#FFFDF8;
+  --leaf:#1F5D3A; --leaf-b:#2E7D4F; --clay:#E2572B; --clay-d:#C6461F;
+  --line:#14150F; --muted:#6b6a5f;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+*,*::before,*::after{box-sizing:inherit;}
+html,body{height:100%;margin:0;}
+html{background:var(--paper);}
+body{
+  font-family:'Inter',system-ui,sans-serif; background:var(--paper); color:var(--ink) !important;
+  -webkit-font-smoothing:antialiased; overflow:hidden;
+}
+input,textarea,button{color:var(--ink);}
+h1,h2,h3,.brand,button,.nav-label{font-family:'Space Grotesk',system-ui,sans-serif;}
+button{font-family:inherit;cursor:pointer;}
+::selection{background:var(--clay);color:#fff;}
+
+.view{position:fixed;inset:0;display:none;}
+.view.active{display:flex;}
+
+/* ---------- LOGIN ---------- */
+#view-auth{
+  position:relative; overflow:hidden; background:var(--ink);
+  align-items:center;justify-content:center;padding:24px;
+}
+#view-auth::before{
+  content:''; position:absolute; inset:0;
+  background:url('aahar_bg.jpeg') center/cover no-repeat;
+  filter:grayscale(.55) brightness(.5) contrast(1.05) blur(1px);
+  transform:scale(1.03);
+}
+#view-auth::after{
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(180deg,rgba(15,16,12,.55),rgba(15,16,12,.82));
+}
+.auth-card{
+  position:relative; z-index:1;
+  width:min(420px,100%); background:var(--card); border:3px solid var(--line);
+  border-radius:32px; padding:36px 32px; box-shadow:10px 10px 0 rgba(0,0,0,.7);
+}
+.auth-logo{width:64px;height:64px;display:block;margin:0 auto 14px;border-radius:18px;}
+.auth-title{text-align:center;font-size:26px;font-weight:700;margin:0 0 2px;}
+.auth-sub{text-align:center;color:var(--muted);font-size:14px;margin:0 0 24px;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:12px;font-weight:600;margin-bottom:6px;color:var(--muted);}
+.field input{
+  width:100%;padding:13px 16px;border:2px solid var(--ink);border-radius:16px;
+  font-size:15px;background:#fff;outline:none;transition:box-shadow .15s;
+}
+.field input:focus{box-shadow:0 0 0 3px rgba(31,93,58,.25);}
+.btn-primary{
+  width:100%;padding:14px;border:2px solid var(--ink);border-radius:18px;background:var(--leaf);
+  color:#fff;font-weight:700;font-size:15px;box-shadow:4px 4px 0 var(--ink);transition:transform .1s;
+}
+.btn-primary:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink);}
+.auth-switch{text-align:center;font-size:13px;margin-top:18px;color:var(--muted);}
+.auth-switch a{color:var(--leaf);font-weight:600;cursor:pointer;text-decoration:underline;}
+.auth-err{color:var(--clay-d);font-size:13px;margin:-6px 0 12px;min-height:16px;font-weight:600;}
+
+/* ---------- APP SHELL ---------- */
+#view-app{display:none;}
+#view-app.active{display:flex;}
+.shell{width:100%;height:100%;display:flex;}
+
+/* Sidebar */
+.sidebar{
+  width:280px;background:var(--ink);color:#EFEBDD;display:flex;flex-direction:column;
+  flex-shrink:0;border-right:3px solid var(--ink);
+}
+.sb-top{padding:20px 18px 10px;display:flex;align-items:center;gap:10px;}
+.sb-top img{width:34px;height:34px;border-radius:10px;}
+.sb-top .brand{font-weight:700;font-size:18px;letter-spacing:.2px;}
+.new-chat{
+  margin:14px 16px;padding:12px 14px;border:2px solid var(--leaf-b);border-radius:16px;
+  background:var(--leaf);color:#fff;font-weight:600;font-size:14px;display:flex;align-items:center;gap:8px;
+}
+.sb-hist{flex:1;overflow-y:auto;padding:4px 12px;}
+.sb-hist::-webkit-scrollbar{width:6px;}
+.sb-hist::-webkit-scrollbar-thumb{background:#3a3a30;border-radius:6px;}
+.hist-label{font-size:11px;color:#8b8a7c;font-weight:600;letter-spacing:.03em;margin:10px 8px 6px;}
+.hist-item{
+  padding:10px 12px;border-radius:14px;font-size:13.5px;margin-bottom:3px;color:#d8d5c4;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:background .12s;
+}
+.hist-item:hover{background:#232319;}
+.hist-item.active{background:var(--leaf);color:#fff;}
+.sb-bottom{border-top:2px solid #2a2a20;padding:12px 14px;display:flex;align-items:center;gap:10px;}
+.sb-avatar{width:34px;height:34px;border-radius:10px;background:var(--clay);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;}
+.sb-user{flex:1;min-width:0;}
+.sb-user .nm{font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sb-user .em{font-size:11px;color:#9a9888;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.icon-btn{width:32px;height:32px;border:none;background:transparent;color:#cfcdba;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.icon-btn:hover{background:#232319;}
+
+/* Main chat column */
+.main{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--paper);}
+.topbar{
+  height:60px;border-bottom:3px solid var(--ink);display:flex;align-items:center;justify-content:space-between;
+  padding:0 22px;flex-shrink:0;
+}
+.topbar h2{font-size:16px;margin:0;font-weight:700;}
+.topbar .actions{display:flex;gap:8px;}
+.pill-btn{
+  border:2px solid var(--ink);background:#fff;border-radius:14px;padding:7px 13px;font-size:12.5px;font-weight:600;
+  display:flex;align-items:center;gap:6px;transition:transform .1s;
+}
+.pill-btn:active{transform:scale(.96);}
+
+.chat-body{flex:1;overflow-y:auto;padding:26px 0 10px;}
+.chat-inner{max-width:720px;margin:0 auto;padding:0 24px;}
+
+.empty-state{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;}
+.empty-state img{width:74px;height:74px;border-radius:22px;margin-bottom:18px;}
+.empty-state h3{font-size:22px;margin:0 0 6px;}
+.empty-state p{color:var(--muted);font-size:14px;margin:0 0 26px;max-width:340px;}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:480px;}
+.chip{border:2px solid var(--ink);border-radius:14px;padding:10px 14px;background:#fff;font-size:13px;font-weight:500;text-align:left;box-shadow:3px 3px 0 var(--ink);transition:transform .1s;}
+.chip:active{transform:translate(1px,1px);box-shadow:2px 2px 0 var(--ink);}
+
+.msg-row{display:flex;margin-bottom:18px;}
+.msg-row.user{justify-content:flex-end;}
+.bubble{max-width:76%;padding:13px 16px;font-size:14.5px;line-height:1.5;border:2px solid var(--ink);}
+.msg-row.user .bubble{background:var(--leaf);color:#fff;border-radius:20px 20px 4px 20px;}
+.msg-row.ai .bubble{background:var(--card);border-radius:20px 20px 20px 4px;box-shadow:3px 3px 0 var(--ink);}
+.msg-row.ai .avatar{width:30px;height:30px;border-radius:9px;background:var(--ink);flex-shrink:0;margin-right:9px;display:flex;align-items:center;justify-content:center;font-size:15px;}
+.msg-wrap{display:flex;align-items:flex-start;max-width:100%;}
+.bubble-col{display:flex;flex-direction:column;}
+.copy-btn{
+  margin-top:6px;border:1.5px solid var(--ink);background:#fff;border-radius:10px;padding:4px 9px;
+  font-size:11px;font-weight:600;align-self:flex-start;display:flex;align-items:center;gap:5px;color:var(--muted);
+}
+.copy-btn:hover{background:var(--paper);}
+
+.typing{display:flex;gap:5px;padding:14px 16px;}
+.typing span{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:bounce 1.2s infinite ease-in-out;}
+.typing span:nth-child(2){animation-delay:.15s;}
+.typing span:nth-child(3){animation-delay:.3s;}
+@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.5;}30%{transform:translateY(-5px);opacity:1;}}
+
+.composer{border-top:3px solid var(--ink);padding:16px 24px calc(16px + env(safe-area-inset-bottom,0px));flex-shrink:0;}
+.composer-inner{max-width:720px;margin:0 auto;display:flex;gap:10px;align-items:flex-end;}
+.composer textarea{
+  flex:1;resize:none;border:2px solid var(--ink);border-radius:22px;padding:13px 18px;font-size:14.5px;
+  font-family:inherit;max-height:120px;outline:none;background:#fff;
+}
+.composer textarea:focus{box-shadow:0 0 0 3px rgba(31,93,58,.2);}
+.send-btn{
+  width:48px;height:48px;border-radius:16px;border:2px solid var(--ink);background:var(--leaf);color:#fff;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:3px 3px 0 var(--ink);transition:transform .1s;
+}
+.send-btn:active{transform:translate(1px,1px);box-shadow:2px 2px 0 var(--ink);}
+.send-btn:disabled{opacity:.4;box-shadow:none;}
+
+/* Overlay panels: profile / settings */
+.overlay{position:fixed;inset:0;background:rgba(20,21,15,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:20px;}
+.overlay.active{display:flex;}
+.panel{
+  width:min(440px,100%);max-height:85vh;overflow-y:auto;background:var(--card);border:3px solid var(--ink);
+  border-radius:28px;padding:28px 26px;box-shadow:10px 10px 0 var(--ink);
+}
+.panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+.panel-head h3{margin:0;font-size:19px;}
+.close-x{width:30px;height:30px;border:2px solid var(--ink);border-radius:9px;background:#fff;display:flex;align-items:center;justify-content:center;}
+.profile-avatar-lg{width:76px;height:76px;border-radius:22px;background:var(--clay);color:#fff;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:700;margin:0 auto 14px;}
+.profile-name{text-align:center;font-size:18px;font-weight:700;margin:0 0 2px;}
+.profile-email{text-align:center;color:var(--muted);font-size:13px;margin:0 0 20px;}
+.info-row{display:flex;justify-content:space-between;padding:12px 0;border-top:1.5px solid #e6e1d3;font-size:13.5px;}
+.info-row span:first-child{color:var(--muted);}
+.setting-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-top:1.5px solid #e6e1d3;}
+.setting-row:first-of-type{border-top:none;}
+.setting-row .lbl{font-size:14px;font-weight:600;}
+.setting-row .sub{font-size:12px;color:var(--muted);margin-top:2px;}
+.switch{width:44px;height:26px;border-radius:14px;border:2px solid var(--ink);background:#e6e1d3;position:relative;flex-shrink:0;transition:background .15s;}
+.switch.on{background:var(--leaf);}
+.switch::after{content:'';position:absolute;top:1px;left:1px;width:18px;height:18px;border-radius:50%;background:#fff;border:1.5px solid var(--ink);transition:transform .15s;}
+.switch.on::after{transform:translateX(18px);}
+.danger-btn{width:100%;margin-top:18px;padding:12px;border:2px solid var(--clay-d);border-radius:16px;background:#fff;color:var(--clay-d);font-weight:700;font-size:14px;}
+.logout-btn{width:100%;margin-top:10px;padding:12px;border:2px solid var(--ink);border-radius:16px;background:var(--ink);color:#fff;font-weight:700;font-size:14px;}
+
+/* Mobile bottom bar */
+.mbar{
+  display:none;position:fixed;left:0;right:0;bottom:0;height:64px;background:var(--ink);border-top:3px solid var(--ink);
+  padding-bottom:env(safe-area-inset-bottom,0px);align-items:center;z-index:40;
+}
+.mbar-inner{display:flex;align-items:center;width:100%;padding:0 16px;gap:14px;}
+.cam-btn{
+  width:54px;height:54px;border-radius:18px;background:var(--clay);border:2.5px solid var(--ink);color:#fff;
+  display:flex;align-items:center;justify-content:center;box-shadow:3px 3px 0 rgba(0,0,0,.4);flex-shrink:0;margin-top:-8px;
+}
+.mbar-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;color:#9a988a;background:none;border:none;}
+.mbar-item.active{color:#fff;}
+.mbar-item .nav-label{font-size:9.5px;font-weight:600;}
+
+@media (max-width:860px){
+  .sidebar{position:fixed;left:0;top:0;bottom:0;z-index:60;transform:translateX(-100%);transition:transform .2s;}
+  .sidebar.open{transform:translateX(0);}
+  .mbar{display:flex;}
+  .composer{padding-bottom:calc(78px + env(safe-area-inset-bottom,0px));}
+  .chat-body{padding-bottom:0;}
+}
+@media (min-width:861px){ .mbar{display:none;} .sb-scrim{display:none!important;} }
+.sb-scrim{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:55;display:none;}
+.sb-scrim.active{display:block;}
+
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;
+  padding:10px 18px;border-radius:14px;font-size:13px;font-weight:600;opacity:0;transition:all .25s;z-index:80;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<!-- AUTH VIEW -->
+<div id="view-auth" class="view active">
+  <div class="auth-card">
+    <img class="auth-logo" src="aahar_logo.png" alt="AAHAR logo">
+    <h1 class="auth-title" id="auth-title">Welcome back</h1>
+    <p class="auth-sub" id="auth-sub">Sign in to ask AAHAR a question</p>
+    <div class="auth-err" id="auth-err"></div>
+    <div class="field" id="field-name" style="display:none;">
+      <label>Full name</label>
+      <input id="in-name" type="text" placeholder="Asha Kumar">
+    </div>
+    <div class="field">
+      <label>Email</label>
+      <input id="in-email" type="email" placeholder="you@farm.co">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input id="in-pass" type="password" placeholder="••••••••">
+    </div>
+    <button class="btn-primary" id="auth-submit">Sign in</button>
+    <p class="auth-switch" id="auth-switch">New here? <a id="auth-toggle">Create an account</a></p>
+  </div>
+</div>
+
+<!-- APP VIEW -->
+<div id="view-app" class="view">
+  <div class="sb-scrim" id="sb-scrim"></div>
+  <div class="shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="sb-top"><img src="aahar_logo.png" alt=""><span class="brand">AAHAR</span></div>
+      <button class="new-chat" id="btn-new-chat">+ New conversation</button>
+      <div class="sb-hist" id="sb-hist"></div>
+      <div class="sb-bottom">
+        <div class="sb-avatar" id="sb-avatar">A</div>
+        <div class="sb-user"><div class="nm" id="sb-name">User</div><div class="em" id="sb-email">user@aahar.ai</div></div>
+        <button class="icon-btn" id="btn-open-settings" title="Settings">⚙</button>
+      </div>
+    </aside>
+
+    <div class="main">
+      <div class="topbar">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <button class="icon-btn" id="btn-menu" style="display:none;color:var(--ink);">☰</button>
+          <h2 id="conv-title">New conversation</h2>
+        </div>
+        <div class="actions">
+          <button class="pill-btn" id="btn-clear">Clear chat</button>
+          <button class="pill-btn" id="btn-profile">Profile</button>
+        </div>
+      </div>
+      <div class="chat-body" id="chat-body">
+        <div class="chat-inner" id="chat-inner"></div>
+      </div>
+      <div class="composer">
+        <div class="composer-inner">
+          <textarea id="in-msg" rows="1" placeholder="Ask AAHAR a question…"></textarea>
+          <button class="send-btn" id="btn-send" disabled>↑</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mbar">
+    <div class="mbar-inner">
+      <button class="cam-btn" id="btn-cam" title="Scan crop photo">📷</button>
+      <button class="mbar-item active" data-tab="chat"><span>💬</span><span class="nav-label">Chat</span></button>
+      <button class="mbar-item" data-tab="history"><span>🕘</span><span class="nav-label">History</span></button>
+      <button class="mbar-item" data-tab="profile"><span>👤</span><span class="nav-label">Profile</span></button>
+      <button class="mbar-item" data-tab="settings"><span>⚙</span><span class="nav-label">Settings</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE OVERLAY -->
+<div class="overlay" id="overlay-profile">
+  <div class="panel">
+    <div class="panel-head"><h3>Profile</h3><button class="close-x" data-close="overlay-profile">✕</button></div>
+    <div class="profile-avatar-lg" id="pf-avatar">A</div>
+    <p class="profile-name" id="pf-name">User</p>
+    <p class="profile-email" id="pf-email">user@aahar.ai</p>
+    <div class="info-row"><span>Member since</span><span id="pf-since">—</span></div>
+    <div class="info-row"><span>Conversations</span><span id="pf-count">0</span></div>
+    <div class="info-row"><span>Plan</span><span>AAHAR Prototype</span></div>
+    <button class="logout-btn" id="btn-logout">Log out</button>
+  </div>
+</div>
+
+<!-- SETTINGS OVERLAY -->
+<div class="overlay" id="overlay-settings">
+  <div class="panel">
+    <div class="panel-head"><h3>Settings</h3><button class="close-x" data-close="overlay-settings">✕</button></div>
+    <div class="setting-row">
+      <div><div class="lbl">Compact bubbles</div><div class="sub">Reduce spacing between messages</div></div>
+      <button class="switch" id="sw-compact"></button>
+    </div>
+    <div class="setting-row">
+      <div><div class="lbl">Sound on send</div><div class="sub">Play a soft tone when sending</div></div>
+      <button class="switch" id="sw-sound"></button>
+    </div>
+    <div class="setting-row">
+      <div><div class="lbl">Save history locally</div><div class="sub">Keep conversations on this device</div></div>
+      <button class="switch on" id="sw-save"></button>
+    </div>
+    <button class="danger-btn" id="btn-wipe">Delete all conversations</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ==========================================================================
+   KRUSHI ECOSYSTEMS CENTRAL CONFIGURATION
+   ========================================================================== */
+const KRUSHI_CONFIG = {
+  API_BASE: (window.location.origin && window.location.origin.startsWith('http')) ? window.location.origin : 'http://localhost:5000',
+  AUTH_URL: (window.location.origin && window.location.origin.startsWith('http')) ? window.location.origin + '/login/' : 'http://localhost:5000/login/',
+  AAHAR_URL: (window.location.origin && window.location.origin.startsWith('http')) ? window.location.origin + '/aahar/' : 'http://localhost:5000/aahar/',
+  SETU_URL: (window.location.origin && window.location.origin.startsWith('http')) ? window.location.origin + '/setu/' : 'http://localhost:5000/setu/',
+  VANI_URL: (window.location.origin && window.location.origin.startsWith('http')) ? window.location.origin + '/vani/' : 'http://localhost:5000/vani/',
+  APP_ID: 'AAHAR'
+};
+
+/* ---------------- Auth & storage ---------------- */
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e) { return d; } },
+  set(k, v) { try { if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} }
+};
+
+let session = store.get('aahar_session', null);
+let convos = [];
+let activeConvId = null;
+let isSignup = false;
+
+const $ = id => document.getElementById(id);
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 1800); }
+function showOverlay(id) { $(id).classList.add('active'); }
+function hideOverlay(id) { $(id).classList.remove('active'); }
+document.querySelectorAll('[data-close]').forEach(b => b.onclick = () => hideOverlay(b.dataset.close));
+
+/* ---- Auth view & Krushi SSO ---- */
+function setAuthMode(signup) {
+  isSignup = signup;
+  if (signup) {
+    // Section 16: Redirect to Central Krushi Login for registration
+    const returnUrl = window.location.href.split('?')[0];
+    window.location.href = KRUSHI_CONFIG.AUTH_URL + '?app=AAHAR&redirect_uri=' + encodeURIComponent(returnUrl) + '#register';
+    return;
+  }
+  $('field-name').style.display = 'none';
+  $('auth-title').textContent = 'Welcome back to AAHAR';
+  $('auth-sub').textContent = 'Sign in with your Krushi Ecosystem account';
+  $('auth-submit').textContent = 'Sign in';
+  $('auth-switch').innerHTML = 'New to Krushi Ecosystem? <a id="auth-toggle">Create an account</a>';
+  $('auth-err').textContent = '';
+  document.getElementById('auth-toggle').onclick = () => setAuthMode(true);
+}
+$('auth-toggle').onclick = () => setAuthMode(true);
+
+$('auth-submit').onclick = async () => {
+  const id = $('in-email').value.trim();
+  const pass = $('in-pass').value;
+  $('auth-err').textContent = '';
+  if (!id || !pass) {
+    $('auth-err').textContent = 'Please enter mobile/email and password.';
+    return;
+  }
+  try {
+    const res = await fetch(KRUSHI_CONFIG.API_BASE + '/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, password: pass })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      $('auth-err').textContent = data.message || 'Login failed. Please check credentials.';
+      return;
+    }
+    session = {
+      token: data.accessToken,
+      profile: data.profile,
+      email: data.profile.email || data.profile.mobile,
+      name: data.profile.name
+    };
+    store.set('aahar_session', session);
+    enterApp();
+  } catch (err) {
+    $('auth-err').textContent = 'Could not connect to Krushi server. Verify backend is running.';
+  }
+};
+
+async function handleSsoCallback() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get('code');
+  if (code) {
+    try {
+      const res = await fetch(KRUSHI_CONFIG.API_BASE + '/auth/exchange', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, app: 'AAHAR' })
+      });
+      const data = await res.json();
+      if (res.ok && data.accessToken) {
+        session = {
+          token: data.accessToken,
+          profile: data.profile,
+          email: data.profile.email || data.profile.mobile,
+          name: data.profile.name
+        };
+        store.set('aahar_session', session);
+        // Clean URL parameter
+        window.history.replaceState({}, document.title, window.location.pathname);
+        return true;
+      }
+    } catch (e) {
+      console.warn('AAHAR SSO exchange error:', e);
+    }
+  }
+  return false;
+}
+
+async function enterApp() {
+  $('view-auth').classList.remove('active');
+  $('view-app').classList.add('active');
+
+  // Verify and sync fresh shared profile from server
+  if (session && session.token) {
+    try {
+      const pRes = await fetch(KRUSHI_CONFIG.API_BASE + '/me', {
+        headers: { 'Authorization': 'Bearer ' + session.token }
+      });
+      const pData = await pRes.json();
+      if (pRes.ok && pData.profile) {
+        session.profile = pData.profile;
+        session.name = pData.profile.name;
+        session.email = pData.profile.email || pData.profile.mobile;
+        store.set('aahar_session', session);
+      }
+    } catch (e) {}
+  }
+
+  const p = (session && session.profile) || {};
+  const displayName = p.name || session.name || session.email || 'Farmer';
+  const displayEmail = p.email || p.mobile || session.email || '';
+  const initials = (displayName[0] || 'K').toUpperCase();
+
+  $('sb-avatar').textContent = initials;
+  $('pf-avatar').textContent = initials;
+  $('sb-name').textContent = displayName;
+  $('sb-email').textContent = displayEmail;
+  $('pf-name').textContent = displayName;
+  $('pf-email').textContent = displayEmail;
+  $('pf-since').textContent = p.village ? (p.village + ', ' + (p.district || '')) : (p.role || 'Farmer');
+
+  // Load real conversation history from backend
+  await loadServerConversations();
+}
+
+$('btn-logout').onclick = async () => {
+  if (session && session.token) {
+    try {
+      await fetch(KRUSHI_CONFIG.API_BASE + '/auth/logout', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + session.token }
+      });
+    } catch (e) {}
+  }
+  session = null;
+  store.set('aahar_session', null);
+  hideOverlay('overlay-profile');
+  $('view-app').classList.remove('active');
+  $('view-auth').classList.add('active');
+  $('in-email').value = '';
+  $('in-pass').value = '';
+  toast('Logged out');
+};
+
+/* ---- Conversations & History ---- */
+async function loadServerConversations() {
+  if (!session || !session.token) return;
+  try {
+    const res = await fetch(KRUSHI_CONFIG.API_BASE + '/aahar/conversations', {
+      headers: { 'Authorization': 'Bearer ' + session.token }
+    });
+    const data = await res.json();
+    if (res.ok && Array.isArray(data)) {
+      convos = data.map(c => ({ id: c.id, title: c.title, messages: [] }));
+      renderHistory();
+      if (convos.length) {
+        await openConv(convos[0].id);
+      } else {
+        newConversation();
+      }
+    } else {
+      newConversation();
+    }
+  } catch (err) {
+    console.warn('Could not load conversations from server:', err);
+    newConversation();
+  }
+}
+
+function newConversation() {
+  const conv = { id: 'c_' + Date.now(), title: 'New conversation', messages: [] };
+  convos.unshift(conv);
+  renderHistory();
+  openConv(conv.id);
+  if (window.innerWidth <= 860) closeSidebar();
+}
+
+async function openConv(id) {
+  activeConvId = id;
+  const conv = convos.find(c => c.id === id);
+  if (!conv) return;
+
+  $('conv-title').textContent = conv.title || 'New conversation';
+
+  // If conversation has messages already cached, render immediately
+  if (conv.messages && conv.messages.length) {
+    renderMessages(conv);
+  }
+
+  // Load full messages from backend
+  if (session && session.token) {
+    try {
+      const res = await fetch(KRUSHI_CONFIG.API_BASE + '/aahar/conversations/' + id, {
+        headers: { 'Authorization': 'Bearer ' + session.token }
+      });
+      const data = await res.json();
+      if (res.ok && data) {
+        conv.title = data.title;
+        conv.messages = (data.messages || []).map(m => ({ role: m.role, text: m.text }));
+        $('conv-title').textContent = conv.title;
+        renderMessages(conv);
+      }
+    } catch (e) {}
+  }
+
+  renderHistory();
+}
+
+function renderHistory() {
+  const el = $('sb-hist');
+  el.innerHTML = '';
+  if (!convos.length) {
+    el.innerHTML = '<div class="hist-label">No conversations yet</div>';
+    return;
+  }
+  const lbl = document.createElement('div');
+  lbl.className = 'hist-label';
+  lbl.textContent = 'Recent';
+  el.appendChild(lbl);
+  convos.forEach(c => {
+    const d = document.createElement('div');
+    d.className = 'hist-item' + (c.id === activeConvId ? ' active' : '');
+    d.textContent = c.title || 'New conversation';
+    d.onclick = () => { openConv(c.id); if (window.innerWidth <= 860) closeSidebar(); };
+    el.appendChild(d);
+  });
+}
+
+function renderMessages(conv) {
+  const inner = $('chat-inner');
+  inner.innerHTML = '';
+  if (!conv.messages || !conv.messages.length) {
+    inner.innerHTML = `<div class="empty-state" style="height:calc(100vh - 180px);">
+      <div style="font-size:64px;margin-bottom:16px;">🌾</div>
+      <h3>Ask AAHAR anything about your harvest</h3>
+      <p>Powered by Gemini AI and connected to your shared Krushi farm profile.</p>
+      <div class="chips">
+        <button class="chip" data-q="What is crop rotation and how does it help soil?">What is crop rotation?</button>
+        <button class="chip" data-q="What causes yellow leaves on tomato plants?">Yellow leaves on tomatoes?</button>
+        <button class="chip" data-q="Best soil pH and irrigation for rice cultivation?">Best pH for rice?</button>
+        <button class="chip" data-q="How often should I water wheat crop?">Wheat watering schedule?</button>
+      </div>
+    </div>`;
+    inner.querySelectorAll('.chip').forEach(c => c.onclick = () => { $('in-msg').value = c.dataset.q; sendMessage(); });
+    return;
+  }
+  conv.messages.forEach(m => inner.appendChild(renderBubble(m)));
+  $('chat-body').scrollTop = $('chat-body').scrollHeight;
+}
+
+function renderBubble(m) {
+  const row = document.createElement('div');
+  row.className = 'msg-row ' + m.role;
+  if (m.role === 'user') {
+    row.innerHTML = `<div class="bubble">${escapeHtml(m.text)}</div>`;
+  } else {
+    row.innerHTML = `<div class="msg-wrap">
+      <div class="avatar">🌱</div>
+      <div class="bubble-col">
+        <div class="bubble">${escapeHtml(m.text)}</div>
+        <button class="copy-btn" data-text="${encodeURIComponent(m.text)}">⧉ Copy</button>
+      </div>
+    </div>`;
+    row.querySelector('.copy-btn').onclick = (e) => {
+      navigator.clipboard.writeText(decodeURIComponent(e.currentTarget.dataset.text)).then(() => toast('Answer copied'));
+    };
+  }
+  return row;
+}
+
+function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+async function sendMessage() {
+  const input = $('in-msg');
+  const text = input.value.trim();
+  if (!text) return;
+
+  let conv = convos.find(c => c.id === activeConvId);
+  if (!conv) {
+    conv = { id: 'c_' + Date.now(), title: text.slice(0, 34), messages: [] };
+    convos.unshift(conv);
+    activeConvId = conv.id;
+  }
+
+  conv.messages.push({ role: 'user', text });
+  if (conv.messages.length === 1) {
+    conv.title = text.slice(0, 34) + (text.length > 34 ? '…' : '');
+    $('conv-title').textContent = conv.title;
+  }
+
+  renderHistory();
+  renderMessages(conv);
+  input.value = '';
+  autosize();
+  $('btn-send').disabled = true;
+
+  const inner = $('chat-inner');
+  const typingRow = document.createElement('div');
+  typingRow.className = 'msg-row ai';
+  typingRow.innerHTML = `<div class="msg-wrap"><div class="avatar">🌱</div><div class="bubble" style="padding:6px 10px;"><div class="typing"><span></span><span></span><span></span></div></div></div>`;
+  inner.appendChild(typingRow);
+  $('chat-body').scrollTop = $('chat-body').scrollHeight;
+
+  try {
+    const res = await fetch(KRUSHI_CONFIG.API_BASE + '/aahar/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + (session ? session.token : '')
+      },
+      body: JSON.stringify({
+        conversationId: activeConvId,
+        message: text
+      })
+    });
+    const data = await res.json();
+    typingRow.remove();
+
+    if (res.ok && data.answer) {
+      conv.messages.push({ role: 'ai', text: data.answer });
+      if (data.title) {
+        conv.title = data.title;
+        $('conv-title').textContent = conv.title;
+      }
+      renderMessages(conv);
+    } else {
+      conv.messages.push({ role: 'ai', text: data.message || 'I am having trouble answering right now. Please try again.' });
+      renderMessages(conv);
+    }
+  } catch (err) {
+    typingRow.remove();
+    conv.messages.push({ role: 'ai', text: 'Could not connect to the Krushi Gemini assistant server.' });
+    renderMessages(conv);
+  }
+}
+
+function autosize() { const t = $('in-msg'); t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight, 120) + 'px'; }
+$('in-msg').addEventListener('input', () => { autosize(); $('btn-send').disabled = !$('in-msg').value.trim(); });
+$('in-msg').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if ($('in-msg').value.trim()) sendMessage(); } });
+$('btn-send').onclick = sendMessage;
+$('btn-new-chat').onclick = newConversation;
+
+$('btn-clear').onclick = async () => {
+  if (confirm('Clear current chat?')) {
+    if (session && session.token && activeConvId) {
+      try {
+        await fetch(KRUSHI_CONFIG.API_BASE + '/aahar/conversations/' + activeConvId + '/clear', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + session.token }
+        });
+      } catch (e) {}
+    }
+    const conv = convos.find(c => c.id === activeConvId);
+    if (conv) {
+      conv.messages = [];
+      conv.title = 'New conversation';
+      $('conv-title').textContent = conv.title;
+      renderHistory();
+      renderMessages(conv);
+    }
+    toast('Chat cleared');
+  }
+};
+
+/* ---- Profile / Settings ---- */
+$('btn-profile').onclick = () => { $('pf-count').textContent = convos.length; showOverlay('overlay-profile'); };
+$('btn-open-settings').onclick = () => showOverlay('overlay-settings');
+['sw-compact', 'sw-sound', 'sw-save'].forEach(id => {
+  $(id).onclick = () => $(id).classList.toggle('on');
+});
+
+$('btn-wipe').onclick = async () => {
+  if (confirm('Delete all conversations on this account?')) {
+    if (session && session.token) {
+      try {
+        await fetch(KRUSHI_CONFIG.API_BASE + '/aahar/conversations', {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + session.token }
+        });
+      } catch (e) {}
+    }
+    convos = [];
+    renderHistory();
+    newConversation();
+    hideOverlay('overlay-settings');
+    toast('All conversations deleted');
+  }
+};
+
+/* ---- Sidebar / mobile nav ---- */
+function openSidebar() { $('sidebar').classList.add('open'); $('sb-scrim').classList.add('active'); }
+function closeSidebar() { $('sidebar').classList.remove('open'); $('sb-scrim').classList.remove('active'); }
+$('sb-scrim').onclick = closeSidebar;
+function checkMenuBtn() { $('btn-menu').style.display = window.innerWidth <= 860 ? 'flex' : 'none'; }
+window.addEventListener('resize', checkMenuBtn); checkMenuBtn();
+$('btn-menu').onclick = openSidebar;
+
+document.querySelectorAll('.mbar-item').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.mbar-item').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const tab = btn.dataset.tab;
+    if (tab === 'chat') {}
+    if (tab === 'history') openSidebar();
+    if (tab === 'profile') { $('pf-count').textContent = convos.length; showOverlay('overlay-profile'); }
+    if (tab === 'settings') showOverlay('overlay-settings');
+  };
+});
+$('btn-cam').onclick = () => toast('Camera scan will connect with Gemini Vision API in next release.');
+
+/* ---- Boot Logic ---- */
+(async function boot() {
+  const ssoExchanged = await handleSsoCallback();
+  if (ssoExchanged || (session && session.token)) {
+    enterApp();
+  } else {
+    // If not authenticated, show sign in or offer redirect to Krushi Login
+    $('view-app').classList.remove('active');
+    $('view-auth').classList.add('active');
+  }
+})();
+</script>
+</body>
+</html>
